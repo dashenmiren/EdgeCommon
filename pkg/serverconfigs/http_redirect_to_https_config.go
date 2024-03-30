@@ -1,6 +1,6 @@
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+import "github.com/dashenmiren/EdgeCommon/pkg/configutils"
 
 // HTTPRedirectToHTTPSConfig 跳转到HTTPS配置
 type HTTPRedirectToHTTPSConfig struct {

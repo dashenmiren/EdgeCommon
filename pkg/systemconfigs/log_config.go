@@ -1,6 +1,6 @@
 package systemconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 
 // DefaultLogConfig 默认日志配置
 func DefaultLogConfig() *LogConfig {

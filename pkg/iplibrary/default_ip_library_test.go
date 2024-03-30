@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/iplibrary"
+	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 )
 
 func TestIPLibrary_Init(t *testing.T) {

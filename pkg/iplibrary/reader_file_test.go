@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/iplibrary"
+	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 	"github.com/iwind/TeaGo/maps"
 )
 

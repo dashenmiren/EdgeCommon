@@ -3,8 +3,9 @@ package dao
 import (
 	"context"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/langs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/langs"
+	"github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
 )
 
 var SharedLogDAO = NewLogDAO()

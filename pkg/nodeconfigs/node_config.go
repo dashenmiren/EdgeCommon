@@ -8,19 +8,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/TeaOSLab/EdgeCommon/pkg/nodeutils"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/ddosconfigs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/firewallconfigs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/Tea"
-	"github.com/iwind/TeaGo/lists"
-	"github.com/iwind/TeaGo/maps"
 	"os"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/nodeutils"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/ddosconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/Tea"
+	"github.com/iwind/TeaGo/lists"
+	"github.com/iwind/TeaGo/maps"
 )
 
 var sharedNodeConfig *NodeConfig = nil

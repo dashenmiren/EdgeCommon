@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/firewallconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 )
 
 func TestRuleCheckpoint_Markdown(t *testing.T) {

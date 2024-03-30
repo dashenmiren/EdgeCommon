@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/iplibrary"
+	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 )
 
 func TestNewWriter(t *testing.T) {

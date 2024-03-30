@@ -1,6 +1,6 @@
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 
 // PlanConfig 套餐配置
 type PlanConfig struct {

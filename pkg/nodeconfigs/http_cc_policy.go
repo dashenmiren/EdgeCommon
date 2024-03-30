@@ -2,7 +2,7 @@
 
 package nodeconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs"
 
 // HTTPCCPolicy CC策略
 type HTTPCCPolicy struct {

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 )
 
 type hashWriter struct {

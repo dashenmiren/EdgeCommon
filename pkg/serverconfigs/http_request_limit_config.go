@@ -1,6 +1,6 @@
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 
 // HTTPRequestLimitConfig HTTP请求限制相关限制配置
 type HTTPRequestLimitConfig struct {

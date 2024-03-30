@@ -1,11 +1,12 @@
 package serverconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/types"
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/types"
 )
 
 type HTTPHostRedirectType = string

@@ -3,7 +3,7 @@ package serverconfigs_test
 import (
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs"
 	"github.com/iwind/TeaGo/assert"
 )
 

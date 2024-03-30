@@ -3,7 +3,8 @@ package serverconfigs
 import (
 	"context"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/sslconfigs"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 )
 
 func NewTLSProtocolConfigFromJSON(configJSON []byte) (*TLSProtocolConfig, error) {

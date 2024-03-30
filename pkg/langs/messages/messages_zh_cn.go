@@ -3,7 +3,7 @@
 package messages
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/langs"
+	"github.com/dashenmiren/EdgeCommon/pkg/langs"
 )
 
 func init() {

@@ -3,7 +3,7 @@ package serverconfigs
 import (
 	"strings"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 type HTTPBaseOptimizationConfig struct {

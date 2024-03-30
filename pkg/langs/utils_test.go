@@ -3,7 +3,7 @@ package langs_test
 import (
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/langs"
+	"github.com/dashenmiren/EdgeCommon/pkg/langs"
 )
 
 func TestMessage(t *testing.T) {

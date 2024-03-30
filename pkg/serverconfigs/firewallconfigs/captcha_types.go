@@ -1,6 +1,6 @@
 package firewallconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 
 type CaptchaType = string
 

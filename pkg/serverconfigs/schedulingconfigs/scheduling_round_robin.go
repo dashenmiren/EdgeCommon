@@ -1,10 +1,11 @@
 package schedulingconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"sync"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/lists"
 	"github.com/iwind/TeaGo/maps"
-	"sync"
 )
 
 // RoundRobinScheduling 轮询调度算法

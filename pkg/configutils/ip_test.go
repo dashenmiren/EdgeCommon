@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/iwind/TeaGo/assert"
 )
 

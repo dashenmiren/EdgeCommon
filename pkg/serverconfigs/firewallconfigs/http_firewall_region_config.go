@@ -1,9 +1,10 @@
 package firewallconfigs
 
 import (
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/regionconfigs"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
 	"strings"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/regionconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 type HTTPFirewallRegionConfig struct {

@@ -3,8 +3,9 @@ package dao
 import (
 	"context"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs"
 )
 
 var SharedServerDAO = new(ServerDAO)

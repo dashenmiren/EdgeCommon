@@ -5,9 +5,10 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
-	"golang.org/x/net/http2"
 	"time"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
+	"golang.org/x/net/http2"
 )
 
 // TLSVersion TLS Version
