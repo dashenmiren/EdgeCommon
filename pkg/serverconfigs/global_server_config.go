@@ -1,3 +1,5 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package serverconfigs
 
 type LnRequestSchedulingMethod = string
@@ -54,9 +56,12 @@ type GlobalServerConfig struct {
 		LnRequestSchedulingMethod LnRequestSchedulingMethod `yaml:"lnRequestSchedulingMethod" json:"lnRequestSchedulingMethod"` // Ln请求调度方法
 		ServerName                string                    `yaml:"serverName" json:"serverName"`                               // Server名称
 		EnableServerAddrVariable  bool                      `yaml:"enableServerAddrVariable" json:"enableServerAddrVariable"`   // 是否支持${serverAddr}变量
+		XFFMaxAddresses           int                       `yaml:"xffMaxAddresses" json:"xffMaxAddresses"`                     // XFF中最多的地址数
 
 		DomainAuditingIsOn   bool   `yaml:"domainAuditingIsOn" json:"domainAuditingIsOn"`     // 域名是否需要审核
 		DomainAuditingPrompt string `yaml:"domainAuditingPrompt" json:"domainAuditingPrompt"` // 域名审核的提示
+
+		RequestOriginsWithEncodings bool `yaml:"requestOriginsWithEncodings" json:"requestOriginsWithEncodings"` // 使用使用压缩编码回源
 	} `yaml:"httpAll" json:"httpAll"` // HTTP统一配置
 
 	TCPAll struct {

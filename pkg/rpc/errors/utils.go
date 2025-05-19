@@ -1,12 +1,13 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package errors
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"path/filepath"
+	"strings"
 )
 
 // HumanError 格式化GRPC相关错误

@@ -2,10 +2,9 @@ package firewallconfigs_test
 
 import (
 	"fmt"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 	"strings"
 	"testing"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 )
 
 func TestRuleOperator_Markdown(t *testing.T) {

@@ -4,13 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/types"
 	"math"
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/types"
 )
 
 // func列表，code => type

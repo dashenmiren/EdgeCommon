@@ -1,12 +1,13 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
 	"encoding/base64"
-	"net/http"
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
 	"github.com/iwind/TeaGo/maps"
+	"net/http"
+	"testing"
 )
 
 func TestHTTPAuthBasicMethodUser_Validate(t *testing.T) {

@@ -1,10 +1,9 @@
 package sslconfigs
 
 import (
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"strconv"
 	"strings"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 )
 
 // HSTS设置

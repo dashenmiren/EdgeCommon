@@ -1,11 +1,12 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
+	"github.com/iwind/TeaGo/rands"
 	"net/http"
 	"strings"
 	"testing"
-
-	"github.com/iwind/TeaGo/rands"
 )
 
 func TestHTTPAuthRequestMethod_Filter(t *testing.T) {

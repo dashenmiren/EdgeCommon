@@ -1,10 +1,11 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package sslconfigs_test
 
 import (
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestSSLCertConfig_MatchDomain(t *testing.T) {

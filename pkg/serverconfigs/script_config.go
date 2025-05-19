@@ -1,9 +1,10 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
-	"strings"
-
 	stringutil "github.com/iwind/TeaGo/utils/string"
+	"strings"
 )
 
 type ScriptConfig struct {

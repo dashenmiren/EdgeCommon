@@ -1,8 +1,9 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
 	"errors"
-
 	"github.com/iwind/TeaGo/types"
 )
 

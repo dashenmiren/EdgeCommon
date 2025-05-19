@@ -16,6 +16,16 @@ type HTTPFileCacheStorage struct {
 
 	OpenFileCache  *OpenFileCacheConfig `yaml:"openFileCache" json:"openFileCache"`   // open file cache配置
 	EnableSendfile bool                 `yaml:"enableSendFile" json:"enableSendfile"` // 是否启用Sendfile
+
+	EnableMMAP                     bool `yaml:"enableMMAP" json:"enableMMAP"`                                         // 是否启用MMAP
+	EnableIncompletePartialContent bool `yaml:"enableIncompletePartialContent" json:"enableIncompletePartialContent"` // 允许读取未下载完整的Partial Content
+}
+
+func NewHTTPFileCacheStorage() *HTTPFileCacheStorage {
+	return &HTTPFileCacheStorage{
+		EnableMMAP:                     false,
+		EnableIncompletePartialContent: true,
+	}
 }
 
 func (this *HTTPFileCacheStorage) Init() error {

@@ -1,13 +1,12 @@
 package schedulingconfigs
 
 import (
-	"math/rand"
-	"net/http"
-	"time"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/maps"
 	"github.com/iwind/TeaGo/rands"
+	"math/rand"
+	"net/http"
+	"time"
 )
 
 // StickyScheduling Sticky调度算法

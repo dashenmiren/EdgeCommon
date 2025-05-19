@@ -1,13 +1,14 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package serverconfigs
 
 import (
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
+	"github.com/iwind/TeaGo/lists"
 	"net/http"
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/iwind/TeaGo/lists"
 )
 
 var httpAuthTimestampRegexp = regexp.MustCompile(`^\d{10}$`)

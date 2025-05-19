@@ -1,9 +1,10 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
-	"strings"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"strings"
 )
 
 // WebPImageConfig WebP配置

@@ -1,9 +1,10 @@
+// Copyright 2024 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package shared_test
 
 import (
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"testing"
 )
 
 func TestBitSizeCapacity_Bits(t *testing.T) {

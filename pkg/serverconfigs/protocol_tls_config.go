@@ -3,7 +3,6 @@ package serverconfigs
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 )
 

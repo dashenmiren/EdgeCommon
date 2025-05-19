@@ -2,7 +2,6 @@ package dao
 
 import (
 	"context"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
 )
 

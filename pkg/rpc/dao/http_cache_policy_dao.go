@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"encoding/json"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs"
 )

@@ -1,11 +1,12 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package firewallconfigs_test
 
 import (
 	"fmt"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 	"strings"
 	"testing"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 )
 
 func TestRuleCheckpoint_Markdown(t *testing.T) {

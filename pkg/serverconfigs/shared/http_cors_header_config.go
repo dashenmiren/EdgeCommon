@@ -1,3 +1,5 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package shared
 
 // HTTPCORSHeaderConfig 参考 https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS

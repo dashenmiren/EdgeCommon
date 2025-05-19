@@ -1,11 +1,12 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package langs
 
 import (
-	"net/http"
-	"strings"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/iwind/TeaGo/actions"
+	"net/http"
+	"strings"
 )
 
 // Message 读取消息

@@ -1,11 +1,12 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package langs
 
 import (
 	"errors"
 	"fmt"
-	"strings"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
+	"strings"
 )
 
 const varPrefix = "lang."

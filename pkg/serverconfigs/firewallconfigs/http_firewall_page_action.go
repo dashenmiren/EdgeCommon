@@ -1,3 +1,5 @@
+// Copyright 2024 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package firewallconfigs
 
 import "net/http"
@@ -10,10 +12,11 @@ type HTTPFirewallPageAction struct {
 	Body   string `yaml:"body" json:"body"`
 }
 
-func DefaultHTTPFirewallPageAction() *HTTPFirewallPageAction {
+
+func NewHTTPFirewallPageAction() *HTTPFirewallPageAction {
 	return &HTTPFirewallPageAction{
-		Status: http.StatusForbidden,
-		Body: `<!DOCTYPE html>
+		Status:  http.StatusForbidden,
+		Body:    `<!DOCTYPE html>
 <html lang="en">
 <head>
 	<title>403 Forbidden</title>

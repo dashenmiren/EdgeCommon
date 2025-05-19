@@ -1,10 +1,11 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
-	"time"
-
 	"github.com/iwind/TeaGo/Tea"
 	timeutil "github.com/iwind/TeaGo/utils/time"
+	"time"
 )
 
 // MetricItemConfig 指标配置

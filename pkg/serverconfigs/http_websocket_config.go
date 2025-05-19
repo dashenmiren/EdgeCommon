@@ -1,10 +1,9 @@
 package serverconfigs
 
 import (
-	"time"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"time"
 )
 
 // HTTPWebsocketConfig websocket设置

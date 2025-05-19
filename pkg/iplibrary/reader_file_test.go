@@ -1,16 +1,18 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary_test
 
 import (
 	"encoding/json"
-	"net"
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 	"github.com/iwind/TeaGo/maps"
+	stringutil "github.com/iwind/TeaGo/utils/string"
+	"net"
+	"testing"
 )
 
 func TestNewFileReader(t *testing.T) {
-	reader, err := iplibrary.NewFileReader("./ip-20c1461c.db", "123456")
+	reader, err := iplibrary.NewFileReader("./default_ip_library_plus_test.go", stringutil.Md5("123456"))
 	if err != nil {
 		t.Fatal(err)
 	}

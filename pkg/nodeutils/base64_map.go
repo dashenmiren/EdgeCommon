@@ -1,9 +1,10 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package nodeutils
 
 import (
 	"encoding/base64"
 	"encoding/json"
-
 	"github.com/iwind/TeaGo/maps"
 )
 

@@ -1,13 +1,14 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary_test
 
 import (
-	"io"
-	"testing"
-	"time"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 	"github.com/iwind/TeaGo/Tea"
 	_ "github.com/iwind/TeaGo/bootstrap"
+	"io"
+	"testing"
+	"time"
 )
 
 type updaterSource struct {

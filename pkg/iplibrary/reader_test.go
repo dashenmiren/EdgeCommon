@@ -1,22 +1,23 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary_test
 
 import (
 	"bytes"
-	"net"
-	"runtime"
-	"testing"
-	"time"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/iplibrary"
 	"github.com/iwind/TeaGo/rands"
 	"github.com/iwind/TeaGo/types"
 	timeutil "github.com/iwind/TeaGo/utils/time"
+	"net"
+	"runtime"
+	"testing"
+	"time"
 )
 
 func TestNewReader(t *testing.T) {
 	var buf = &bytes.Buffer{}
-	var writer = iplibrary.NewWriter(buf, &iplibrary.Meta{
-		Author: "GoCDN <https://google.com>",
+	var writer = iplibrary.NewWriterV1(buf, &iplibrary.Meta{
+		Author: "GoEdge <https://cdn.foyeseo.com>",
 	})
 
 	err := writer.WriteMeta()
@@ -62,7 +63,7 @@ func TestNewReader(t *testing.T) {
 
 	var stat = &runtime.MemStats{}
 	runtime.ReadMemStats(stat)
-	reader, err := iplibrary.NewReader(buf)
+	reader, err := iplibrary.NewReaderV2(buf)
 
 	var stat2 = &runtime.MemStats{}
 	runtime.ReadMemStats(stat2)
@@ -114,8 +115,8 @@ func BenchmarkNewReader(b *testing.B) {
 	runtime.GOMAXPROCS(1)
 
 	var buf = &bytes.Buffer{}
-	var writer = iplibrary.NewWriter(buf, &iplibrary.Meta{
-		Author: "GoCDN <https://google.com>",
+	var writer = iplibrary.NewWriterV1(buf, &iplibrary.Meta{
+		Author: "GoEdge <https://cdn.foyeseo.com>",
 	})
 
 	err := writer.WriteMeta()
@@ -134,7 +135,7 @@ func BenchmarkNewReader(b *testing.B) {
 		}
 	}
 
-	reader, err := iplibrary.NewReader(buf)
+	reader, err := iplibrary.NewReaderV2(buf)
 	if err != nil {
 		b.Fatal(err)
 	}

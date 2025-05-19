@@ -2,10 +2,9 @@ package serverconfigs
 
 import (
 	"fmt"
-	"regexp"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"regexp"
 )
 
 type HTTPRewriteMode = string

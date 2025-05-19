@@ -49,7 +49,7 @@ const (
 	AdminCommon_MenuSettingWebPPolicy                           langs.MessageCode = "admin_common@menu_setting_webp_policy"                               // WebP策略
 	AdminCommon_ServerError                                     langs.MessageCode = "admin_common@server_error"                                           // 服务器出了点小问题，请联系技术人员处理。
 	AdminCommon_System                                          langs.MessageCode = "admin_common@system"                                                 // 系统
-	AdminDashboard_DiskUsageWarning                             langs.MessageCode = "admin_dashboard@disk_usage_warning"                                  // 当前服务器磁盘空间不足，请立即扩充容量，文件路径：%s，已使用：%dG，已使用比例：%.2f%%，仅剩余空间：%.2f%%。<br/>如果是因为本机数据库数据过多，你可以：<a href="/settings/database/clean">[清理访问日志]</a> &nbsp; &nbsp; [调整数据库binlog设置]
+	AdminDashboard_DiskUsageWarning                             langs.MessageCode = "admin_dashboard@disk_usage_warning"                                  // 当前服务器磁盘空间不足，请立即扩充容量，文件路径：%s，已使用：%dG，已使用比例：%.2f%%，仅剩余空间：%.2f%%。<br/>如果是因为本机数据库数据过多，你可以：<a href="/settings/database/clean">[清理访问日志]</a> &nbsp; &nbsp; <a href="https://goedge.cloud/docs/APINode/QA.md" target="_blank">[调整数据库binlog设置]</a>
 	AdminDashboard_UIDNS                                        langs.MessageCode = "admin_dashboard@ui_dns"                                              // DNS
 	AdminDashboard_UIEvents                                     langs.MessageCode = "admin_dashboard@ui_events"                                           // 事件
 	AdminDashboard_UIOverview                                   langs.MessageCode = "admin_dashboard@ui_overview"                                         // 概况
@@ -266,6 +266,7 @@ const (
 	Node_LogInstallNodeRemotely                                 langs.MessageCode = "node@log_install_node_remotely"                                      // 远程安装节点 %d
 	Node_LogStartNodeRemotely                                   langs.MessageCode = "node@log_start_node_remotely"                                        // 远程启动节点 %d
 	Node_LogStopNodeRemotely                                    langs.MessageCode = "node@log_stop_node_remotely"                                         // 远程停止节点 %d
+	Node_LogUninstallNodeRemotely                               langs.MessageCode = "node@log_uninstall_node_remotely"                                    // 远程卸载节点 %d
 	Node_LogUpNode                                              langs.MessageCode = "node@log_up_node"                                                    // 手动上线节点 %d
 	Node_LogUpdateNode                                          langs.MessageCode = "node@log_update_node"                                                // 修改节点 %d 基本信息
 	Node_LogUpdateNodeInstallationStatus                        langs.MessageCode = "node@log_update_node_installation_status"                            // 修改节点安装状态 %d
@@ -544,7 +545,6 @@ const (
 	Server_MenuSettingUAM                                       langs.MessageCode = "server@menu_setting_uam"                                             // 5秒盾
 	Server_MenuSettingUDP                                       langs.MessageCode = "server@menu_setting_udp"                                             // UDP
 	Server_MenuSettingUDPProxy                                  langs.MessageCode = "server@menu_setting_udp_proxy"                                       // UDP代理
-	Server_MenuSettingUnix                                      langs.MessageCode = "server@menu_setting_unix"                                            // Unix
 	Server_MenuSettingUserAgents                                langs.MessageCode = "server@menu_setting_user_agents"                                     // UA名单
 	Server_MenuSettingWAF                                       langs.MessageCode = "server@menu_setting_waf"                                             // WAF
 	Server_MenuSettingWebP                                      langs.MessageCode = "server@menu_setting_webp"                                            // WebP
@@ -607,6 +607,7 @@ const (
 	ServerOrigin_LogCreateOrigin                                langs.MessageCode = "server_origin@log_create_origin"                                     // 创建源站 %d
 	ServerOrigin_LogDeleteOrigin                                langs.MessageCode = "server_origin@log_delete_origin"                                     // 删除源站 %d
 	ServerOrigin_LogUpdateOrigin                                langs.MessageCode = "server_origin@log_update_origin"                                     // 修改源站 %d
+	ServerOrigin_LogUpdateOriginIsOn                            langs.MessageCode = "server_origin@log_update_origin_is_on"                               // 修改源站 %d 启用状态
 	ServerPage_LogCreatePage                                    langs.MessageCode = "server_page@log_create_page"                                         // 创建自定义页面 %d
 	ServerPage_LogUpdateClusterPages                            langs.MessageCode = "server_page@log_update_cluster_pages"                                // 修改集群 %d 自定义页面策略
 	ServerPage_LogUpdatePage                                    langs.MessageCode = "server_page@log_update_page"                                         // 修改自定义页面 %d
@@ -647,7 +648,7 @@ const (
 	SSLCert_MenuApply                                           langs.MessageCode = "ssl_cert@menu_apply"                                                 // 申请证书
 	SSLCert_MenuCerts                                           langs.MessageCode = "ssl_cert@menu_certs"                                                 // 证书
 	SSLCert_MenuOCSP                                            langs.MessageCode = "ssl_cert@menu_ocsp"                                                  // OCSP日志
-	System_HomePage                                             langs.MessageCode = "system@home_page"                                                    //
+	System_HomePage                                             langs.MessageCode = "system@home_page"                                                    // https://goedge.cloud
 	TicketCategory_LogCreateTicketCategory                      langs.MessageCode = "ticket_category@log_create_ticket_category"                          // 添加工单分类 %d
 	TicketCategory_LogDeleteTicketCategory                      langs.MessageCode = "ticket_category@log_delete_ticket_category"                          // 删除工单分类 %d
 	TicketCategory_LogUpdateTicketCategory                      langs.MessageCode = "ticket_category@log_update_ticket_category"                          // 修改分类 %d

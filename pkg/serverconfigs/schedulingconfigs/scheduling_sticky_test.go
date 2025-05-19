@@ -1,11 +1,10 @@
 package schedulingconfigs
 
 import (
-	"net/http"
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/maps"
+	"net/http"
+	"testing"
 )
 
 func TestStickyScheduling_NextArgument(t *testing.T) {

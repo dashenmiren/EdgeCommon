@@ -1,3 +1,5 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package shared
 
 import (
@@ -12,7 +14,7 @@ var dataMapPrefix = []byte("GOEDGE_DATA_MAP:")
 // DataMap 二进制数据共享Map
 // 用来减少相同数据占用的空间和内存
 type DataMap struct {
-	Map    map[string][]byte
+	Map map[string][]byte
 	locker sync.Mutex
 }
 

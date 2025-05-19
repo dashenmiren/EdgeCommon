@@ -3,9 +3,8 @@ package serverconfigs
 import (
 	"bytes"
 	"encoding/json"
-	"time"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"time"
 )
 
 const DefaultHTTPCachePolicyFetchTimeout = 20 * time.Minute
@@ -97,7 +96,7 @@ func (this *HTTPCachePolicy) UpdateDiskDir(dir string, subDirs []*CacheDir) {
 			return
 		}
 
-		var options = &HTTPFileCacheStorage{}
+		var options = NewHTTPFileCacheStorage()
 		err = json.Unmarshal(oldOptionsJSON, options)
 		if err != nil {
 			return

@@ -2,11 +2,10 @@ package serverconfigs
 
 import (
 	"context"
-	"sync"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/lists"
+	"sync"
 )
 
 type RequestHostType = int8

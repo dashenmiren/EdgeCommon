@@ -1,43 +1,21 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary
 
 import (
-	"crypto/md5"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"hash"
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"io"
+	"math/big"
 	"net"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 )
 
-type hashWriter struct {
-	rawWriter io.Writer
-	hash      hash.Hash
-}
-
-func newHashWriter(writer io.Writer) *hashWriter {
-	return &hashWriter{
-		rawWriter: writer,
-		hash:      md5.New(),
-	}
-}
-
-func (this *hashWriter) Write(p []byte) (n int, err error) {
-	n, err = this.rawWriter.Write(p)
-	this.hash.Write(p)
-	return
-}
-
-func (this *hashWriter) Sum() string {
-	return fmt.Sprintf("%x", this.hash.Sum(nil))
-}
-
-type Writer struct {
+type WriterV1 struct {
 	writer *hashWriter
 	meta   *Meta
 
@@ -49,21 +27,21 @@ type Writer struct {
 	lastProviderId int64
 }
 
-func NewWriter(writer io.Writer, meta *Meta) *Writer {
+func NewWriterV1(writer io.Writer, meta *Meta) *WriterV1 {
 	if meta == nil {
 		meta = &Meta{}
 	}
 	meta.Version = Version2
 	meta.CreatedAt = time.Now().Unix()
 
-	var libWriter = &Writer{
+	var libWriter = &WriterV1{
 		writer: newHashWriter(writer),
 		meta:   meta,
 	}
 	return libWriter
 }
 
-func (this *Writer) WriteMeta() error {
+func (this *WriterV1) WriteMeta() error {
 	metaJSON, err := json.Marshal(this.meta)
 	if err != nil {
 		return err
@@ -76,7 +54,7 @@ func (this *Writer) WriteMeta() error {
 	return err
 }
 
-func (this *Writer) Write(ipFrom string, ipTo string, countryId int64, provinceId int64, cityId int64, townId int64, providerId int64) error {
+func (this *WriterV1) Write(ipFrom string, ipTo string, countryId int64, provinceId int64, cityId int64, townId int64, providerId int64) error {
 	// validate IP
 	var fromIP = net.ParseIP(ipFrom)
 	if fromIP == nil {
@@ -99,11 +77,14 @@ func (this *Writer) Write(ipFrom string, ipTo string, countryId int64, provinceI
 		pieces = append(pieces, "")
 	} else {
 		pieces = append(pieces, "6")
+
+		// we do NOT support v6 yet
+		return nil
 	}
 
 	// 1
-	var fromIPLong = configutils.IP2Long(fromIP)
-	var toIPLong = configutils.IP2Long(toIP)
+	var fromIPLong = this.ip2long(fromIP)
+	var toIPLong = this.ip2long(toIP)
 
 	if toIPLong < fromIPLong {
 		fromIPLong, toIPLong = toIPLong, fromIPLong
@@ -192,10 +173,25 @@ func (this *Writer) Write(ipFrom string, ipTo string, countryId int64, provinceI
 	return err
 }
 
-func (this *Writer) Sum() string {
+func (this *WriterV1) Sum() string {
 	return this.writer.Sum()
 }
 
-func (this *Writer) formatUint64(i uint64) string {
+func (this *WriterV1) formatUint64(i uint64) string {
 	return strconv.FormatUint(i, 32)
+}
+
+func (this *WriterV1) ip2long(netIP net.IP) uint64 {
+	if len(netIP) == 0 {
+		return 0
+	}
+
+	var b4 = netIP.To4()
+	if b4 != nil {
+		return uint64(binary.BigEndian.Uint32(b4.To4()))
+	}
+
+	var i = big.NewInt(0)
+	i.SetBytes(netIP.To16())
+	return i.Uint64()
 }

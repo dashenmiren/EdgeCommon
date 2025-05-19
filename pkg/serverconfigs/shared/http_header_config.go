@@ -1,10 +1,9 @@
 package shared
 
 import (
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"regexp"
 	"strings"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 )
 
 // HTTPHeaderReplaceValue 值替换定义

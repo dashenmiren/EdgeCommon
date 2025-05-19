@@ -1,13 +1,12 @@
 package configutils_test
 
 import (
-	"runtime"
-	"strconv"
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/iwind/TeaGo/assert"
 	"github.com/iwind/TeaGo/types"
+	"runtime"
+	"strconv"
+	"testing"
 )
 
 func TestParseVariables(t *testing.T) {
@@ -113,6 +112,29 @@ func TestParseVariables_Modifier(t *testing.T) {
 		switch varName {
 		case "var":
 			return "abc"
+		}
+		return "${" + varName + "}"
+	}))
+
+	// quote
+	t.Log("quote(abc)", "=>", configutils.ParseVariables("${var|quote}", func(varName string) (value string) {
+		switch varName {
+		case "var":
+			return "abc"
+		}
+		return "${" + varName + "}"
+	}))
+	t.Log("quote(\"ABC\"123)", "=>", configutils.ParseVariables("${var|quote}", func(varName string) (value string) {
+		switch varName {
+		case "var":
+			return "\"ABC\"123"
+		}
+		return "${" + varName + "}"
+	}))
+	t.Log("quote('ABC'123)", "=>", configutils.ParseVariables("${var|quote}", func(varName string) (value string) {
+		switch varName {
+		case "var":
+			return "'ABC'123"
 		}
 		return "${" + varName + "}"
 	}))

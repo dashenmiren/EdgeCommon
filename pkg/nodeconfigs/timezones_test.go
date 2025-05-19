@@ -1,10 +1,11 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package nodeconfigs
 
 import (
+	"github.com/iwind/TeaGo/logs"
 	"testing"
 	"time"
-
-	"github.com/iwind/TeaGo/logs"
 )
 
 func TestFindAllTimeZoneLocations(t *testing.T) {

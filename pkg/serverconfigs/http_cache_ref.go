@@ -1,11 +1,10 @@
 package serverconfigs
 
 import (
-	"net/http"
-	"strings"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/lists"
+	"net/http"
+	"strings"
 )
 
 var DefaultSkippedResponseCacheControlValues = []string{"private", "no-cache", "no-store"}

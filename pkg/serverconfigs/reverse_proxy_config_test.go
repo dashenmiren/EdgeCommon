@@ -1,10 +1,11 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
 	"context"
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"testing"
 )
 
 func TestReverseProxyConfig_Init(t *testing.T) {

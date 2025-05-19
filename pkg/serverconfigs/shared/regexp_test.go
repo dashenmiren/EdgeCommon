@@ -1,10 +1,9 @@
 package shared_test
 
 import (
-	"testing"
-
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestRegexp(t *testing.T) {

@@ -2,14 +2,13 @@ package serverconfigs
 
 import (
 	"errors"
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/maps"
 	"net"
 	"path/filepath"
 	"regexp"
 	"time"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/maps"
 )
 
 // HTTPFastcgiParam Fastcgi参数
