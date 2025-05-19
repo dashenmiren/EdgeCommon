@@ -1,17 +1,23 @@
-package firewallconfigs
+package firewallconfigs_test
 
 import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 )
 
 func TestRuleOperator_Markdown(t *testing.T) {
-	result := []string{}
-	for _, def := range AllRuleOperators {
-		row := "## " + def.Name + "\n"
-		row += "符号：`" + def.Code + "`\n"
-		row += "描述：" + def.Description + "\n"
+	var result = []string{}
+	for _, def := range firewallconfigs.AllRuleOperators {
+		def.Description = strings.ReplaceAll(def.Description, "<code-label>", "`")
+		def.Description = strings.ReplaceAll(def.Description, "</code-label>", "`")
+
+		var row = "## " + def.Name + "\n"
+		row += "* 名称：" + def.Name + "\n"
+		row += "* 代号：`" + def.Code + "`\n"
+		row += "* 描述：" + def.Description + "\n"
 		result = append(result, row)
 	}
 

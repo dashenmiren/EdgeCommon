@@ -1,12 +1,12 @@
 package configutils
 
 import (
-	"github.com/go-yaml/yaml"
-	"io/ioutil"
+	"gopkg.in/yaml.v3"
+	"os"
 )
 
 func UnmarshalYamlFile(file string, ptr interface{}) error {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}

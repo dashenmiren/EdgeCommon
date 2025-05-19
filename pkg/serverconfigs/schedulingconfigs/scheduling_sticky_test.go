@@ -1,10 +1,11 @@
 package schedulingconfigs
 
 import (
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/maps"
 	"net/http"
 	"testing"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/maps"
 )
 
 func TestStickyScheduling_NextArgument(t *testing.T) {
@@ -29,7 +30,7 @@ func TestStickyScheduling_NextArgument(t *testing.T) {
 
 	t.Log(s.mapping)
 
-	req, err := http.NewRequest("GET", "http://www.example.com/?origin=c", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://www.example.com/?origin=c", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +68,7 @@ func TestStickyScheduling_NextCookie(t *testing.T) {
 
 	t.Log(s.mapping)
 
-	req, err := http.NewRequest("GET", "http://www.example.com/?origin=c", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://www.example.com/?origin=c", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -110,7 +111,7 @@ func TestStickyScheduling_NextHeader(t *testing.T) {
 
 	t.Log(s.mapping)
 
-	req, err := http.NewRequest("GET", "http://www.example.com/?origin=c", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://www.example.com/?origin=c", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

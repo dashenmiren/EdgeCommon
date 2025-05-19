@@ -1,5 +1,7 @@
 package firewallconfigs
 
+import "github.com/iwind/TeaGo/maps"
+
 type HTTPFirewallRuleConnector = string
 
 const (
@@ -15,59 +17,31 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// xss
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "XSS"
 		group.Code = "xss"
 		group.Description = "防跨站脚本攻击（Cross Site Scripting）"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
-			set.Name = "Javascript事件"
-			set.Code = "1001"
+			set.Name = "XSS攻击检测"
+			set.Code = "1010"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
-				Param:             "${requestURI}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `(onmouseover|onmousemove|onmousedown|onmouseup|onerror|onload|onclick|ondblclick|onkeydown|onkeyup|onkeypress)\s*=`, // TODO more keywords here
-				IsCaseInsensitive: true,
-			})
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "Javascript函数"
-			set.Code = "1002"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestURI}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `(alert|eval|prompt|confirm)\s*\(`, // TODO more keywords here
-				IsCaseInsensitive: true,
-			})
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "HTML标签"
-			set.Code = "1003"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestURI}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `<(script|iframe|link)`, // TODO more keywords here
-				IsCaseInsensitive: true,
+				Param:             "${requestAll}",
+				Operator:          HTTPFirewallRuleOperatorContainsXSS,
+				Value:             "",
+				IsCaseInsensitive: false,
 			})
 			group.AddRuleSet(set)
 		}
@@ -77,19 +51,25 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// upload
 	{
-		group := &HTTPFirewallRuleGroup{}
-		group.IsOn = true
+		var group = &HTTPFirewallRuleGroup{}
+		group.IsOn = false
 		group.Name = "文件上传"
 		group.Code = "upload"
 		group.Description = "防止上传可执行脚本文件到服务器"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
 			set.Name = "上传文件扩展名"
 			set.Code = "2001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestUpload.ext}",
@@ -105,19 +85,25 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// web shell
 	{
-		group := &HTTPFirewallRuleGroup{}
-		group.IsOn = true
+		var group = &HTTPFirewallRuleGroup{}
+		group.IsOn = false
 		group.Name = "Web Shell"
 		group.Code = "webShell"
 		group.Description = "防止远程执行服务器命令"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
 			set.Name = "Web Shell"
 			set.Code = "3001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestAll}",
@@ -133,18 +119,24 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// command injection
 	{
-		group := &HTTPFirewallRuleGroup{}
-		group.IsOn = true
+		var group = &HTTPFirewallRuleGroup{}
+		group.IsOn = false
 		group.Name = "命令注入"
 		group.Code = "commandInjection"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
 			set.Name = "命令注入"
 			set.Code = "4001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestURI}",
@@ -167,24 +159,30 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// path traversal
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "路径穿越"
 		group.Code = "pathTraversal"
 		group.Description = "防止读取网站目录之外的其他系统文件"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
 			set.Name = "路径穿越"
 			set.Code = "5001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestURI}",
 				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `((\.+)(/+)){2,}`, // TODO more keywords here
+				Value:             `((\.+)(/+)){2,}`,
 				IsCaseInsensitive: false,
 			})
 			group.AddRuleSet(set)
@@ -195,24 +193,30 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// special dirs
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "特殊目录"
 		group.Code = "denyDirs"
 		group.Description = "防止通过Web访问到一些特殊目录"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
 			set.Name = "特殊目录"
 			set.Code = "6001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestPath}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `/\.(git|svn|htaccess|idea)\b`, // TODO more keywords here
+				Operator:          HTTPFirewallRuleOperatorContainsAnyWord,
+				Value:             "/.git\n/.svn\n/.htaccess\n/.idea\n/.env\n/.vscode",
 				IsCaseInsensitive: true,
 			})
 			group.AddRuleSet(set)
@@ -223,123 +227,32 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// sql injection
 	{
-		group := &HTTPFirewallRuleGroup{}
-		group.IsOn = true
+		var group = &HTTPFirewallRuleGroup{}
+		group.IsOn = false
 		group.Name = "SQL注入"
 		group.Code = "sqlInjection"
 		group.Description = "防止SQL注入漏洞"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
-			set.Name = "Union SQL Injection"
-			set.Code = "7001"
+			set.Name = "SQL注入检测"
+			set.Code = "7010"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `union[\s/\*]+select`,
-				IsCaseInsensitive: true,
-			})
-
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "SQL注释"
-			set.Code = "7002"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `/\*(!|\x00)`,
-				IsCaseInsensitive: true,
-			})
-
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "SQL条件"
-			set.Code = "7003"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `\s(and|or|rlike)\s+(if|updatexml)\s*\(`,
-				IsCaseInsensitive: true,
-			})
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `\s+(and|or|rlike)\s+(select|case)\s+`,
-				IsCaseInsensitive: true,
-			})
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `\s+(and|or|procedure)\s+[\w\p{L}]+\s*=\s*[\w\p{L}]+(\s|$|--|#)`,
-				IsCaseInsensitive: true,
-			})
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `\(\s*case\s+when\s+[\w\p{L}]+\s*=\s*[\w\p{L}]+\s+then\s+`,
-				IsCaseInsensitive: true,
-			})
-
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "SQL函数"
-			set.Code = "7004"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `(updatexml|extractvalue|ascii|ord|char|chr|count|concat|rand|floor|substr|length|len|user|database|benchmark|analyse)\s*\(`,
-				IsCaseInsensitive: true,
-			})
-
-			group.AddRuleSet(set)
-		}
-
-		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "SQL附加语句"
-			set.Code = "7005"
-			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
-
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${requestAll}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `;\s*(declare|use|drop|create|exec|delete|update|insert)\s`,
-				IsCaseInsensitive: true,
+				Operator:          HTTPFirewallRuleOperatorContainsSQLInjection,
+				Value:             "",
+				IsCaseInsensitive: false,
 			})
 
 			group.AddRuleSet(set)
@@ -350,26 +263,115 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// bot
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "网络爬虫"
 		group.Code = "bot"
 		group.Description = "禁止一些网络爬虫"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
-			set.IsOn = true
-			set.Name = "常见网络爬虫"
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = false
+			set.Name = "搜索引擎"
 			set.Code = "20001"
 			set.Connector = HTTPFirewallRuleConnectorOr
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
 
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
 				Param:             "${userAgent}",
-				Operator:          HTTPFirewallRuleOperatorMatch,
-				Value:             `Googlebot|AdsBot|bingbot|BingPreview|facebookexternalhit|Slurp|Sogou|proximic|Baiduspider|yandex|twitterbot|spider|python`,
+				Operator:          HTTPFirewallRuleOperatorContainsAnyWord,
+				Value:             "360spider\nadldxbot\nadsbot-google\napplebot\nadmantx\nalexa\nbaidu\nbingbot\nbingpreview\nfacebookexternalhit\ngooglebot\nproximic\nslurp\nsogou\ntwitterbot\nyandex\nspider",
 				IsCaseInsensitive: true,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "爬虫工具"
+			set.Code = "20003"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorContainsAnyWord,
+				Value:             "python\npycurl\nhttp-client\nhttpclient\napachebench\nnethttp\nhttp_request\njava\nperl\nruby\nscrapy\nphp\nrust",
+				IsCaseInsensitive: true,
+			})
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorNotContainsAnyWord,
+				Value:             "goedge",
+				IsCaseInsensitive: true,
+				Description:       "User-Agent白名单",
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "下载工具"
+			set.Code = "20004"
+			set.Connector = HTTPFirewallRuleConnectorOr
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionTag,
+					Options: maps.Map{
+						"tags": []string{"download"},
+					},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorContainsAnyWord,
+				Value:             "wget\ncurl",
+				IsCaseInsensitive: true,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "空Agent"
+			set.Code = "20002"
+			set.Connector = HTTPFirewallRuleConnectorOr
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
+
+			// 空Agent
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:              true,
+				Param:             "${userAgent}",
+				Operator:          HTTPFirewallRuleOperatorEqString,
+				Value:             "",
+				IsCaseInsensitive: false,
 			})
 
 			group.AddRuleSet(set)
@@ -378,58 +380,99 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
 	}
 
-	// cc
+	// cc2
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "CC攻击"
 		group.Description = "Challenge Collapsar，防止短时间大量请求涌入，请谨慎开启和设置"
-		group.Code = "cc"
+		group.Code = "cc2"
+		group.IsTemplate = true
 
 		{
-			set := &HTTPFirewallRuleSet{}
+			var set = &HTTPFirewallRuleSet{}
 			set.IsOn = true
-			set.Name = "CC请求数"
-			set.Description = "限制单IP在一定时间内的请求数"
+			set.Name = "CC单URL请求数"
+			set.Description = "限制单IP在一定时间内对单URL的请求数"
 			set.Code = "8001"
 			set.Connector = HTTPFirewallRuleConnectorAnd
-			set.Action = HTTPFirewallActionBlock
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 1800,
+					},
+				},
+			}
+			set.IgnoreLocal = true
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:     true,
-				Param:    "${cc.requests}",
+				Param:    "${cc2}",
 				Operator: HTTPFirewallRuleOperatorGt,
-				Value:    "1000",
+				Value:    "120",
 				CheckpointOptions: map[string]interface{}{
-					"period": "60",
+					"keys":              []string{"${remoteAddr}", "${requestPath}"},
+					"period":            "60",
+					"threshold":         120,
+					"enableFingerprint": true,
 				},
 				IsCaseInsensitive: false,
 			})
+
+			group.AddRuleSet(set)
+		}
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "CC请求数"
+			set.Description = "限制单IP在一定时间内的总体请求数"
+			set.Code = "8002"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.IgnoreLocal = true
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code: HTTPFirewallActionBlock,
+					Options: maps.Map{
+						"timeout": 1800,
+					},
+				},
+			}
 			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${remoteAddr}",
-				Operator:          HTTPFirewallRuleOperatorNotIPRange,
-				Value:             `127.0.0.1/8`,
+				IsOn:     true,
+				Param:    "${cc2}",
+				Operator: HTTPFirewallRuleOperatorGt,
+				Value:    "1200",
+				CheckpointOptions: map[string]interface{}{
+					"keys":              []string{"${remoteAddr}"},
+					"period":            "60",
+					"threshold":         1200,
+					"enableFingerprint": true,
+				},
 				IsCaseInsensitive: false,
 			})
+
+			group.AddRuleSet(set)
+		}
+
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "随机URL攻击"
+			set.Description = "限制用户使用随机URL访问网站"
+			set.Code = "8003"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
+
 			set.AddRule(&HTTPFirewallRule{
 				IsOn:              true,
-				Param:             "${remoteAddr}",
-				Operator:          HTTPFirewallRuleOperatorNotIPRange,
-				Value:             `192.168.0.1/16`,
-				IsCaseInsensitive: false,
-			})
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${remoteAddr}",
-				Operator:          HTTPFirewallRuleOperatorNotIPRange,
-				Value:             `10.0.0.1/8`,
-				IsCaseInsensitive: false,
-			})
-			set.AddRule(&HTTPFirewallRule{
-				IsOn:              true,
-				Param:             "${remoteAddr}",
-				Operator:          HTTPFirewallRuleOperatorNotIPRange,
-				Value:             `172.16.0.1/12`,
+				Param:             "${args}",
+				Operator:          HTTPFirewallRuleOperatorMatch,
+				Value:             `^[0-9a-zA-Z_\-.]{12,}$`,
 				IsCaseInsensitive: false,
 			})
 
@@ -441,11 +484,54 @@ func HTTPFirewallTemplate() *HTTPFirewallPolicy {
 
 	// custom
 	{
-		group := &HTTPFirewallRuleGroup{}
+		var group = &HTTPFirewallRuleGroup{}
+		group.IsOn = true
+		group.Name = "防盗链"
+		group.Description = "防止第三方网站引用本站资源。"
+		group.Code = "referer"
+		group.IsTemplate = true
+
+		{
+			var set = &HTTPFirewallRuleSet{}
+			set.IsOn = true
+			set.Name = "防盗链"
+			set.Description = "防止第三方网站引用本站资源"
+			set.Code = "9001"
+			set.Connector = HTTPFirewallRuleConnectorAnd
+			set.Actions = []*HTTPFirewallActionConfig{
+				{
+					Code:    HTTPFirewallActionPage,
+					Options: maps.Map{"status": 403, "body": ""},
+				},
+			}
+
+			set.AddRule(&HTTPFirewallRule{
+				IsOn:     true,
+				Param:    "${refererBlock}",
+				Operator: HTTPFirewallRuleOperatorEq,
+				Value:    "0",
+				CheckpointOptions: map[string]interface{}{
+					"allowEmpty":      true,
+					"allowSameDomain": true,
+					"allowDomains":    []string{"*"},
+				},
+				IsCaseInsensitive: false,
+			})
+
+			group.AddRuleSet(set)
+		}
+
+		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
+	}
+
+	// custom
+	{
+		var group = &HTTPFirewallRuleGroup{}
 		group.IsOn = true
 		group.Name = "自定义规则分组"
 		group.Description = "我的自定义规则分组，可以将自定义的规则放在这个分组下"
 		group.Code = "custom"
+		group.IsTemplate = true
 		policy.Inbound.Groups = append(policy.Inbound.Groups, group)
 	}
 

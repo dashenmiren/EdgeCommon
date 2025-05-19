@@ -1,10 +1,12 @@
 package serverconfigs
 
 import (
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"context"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 type HTTPLocationConfig struct {
@@ -20,6 +22,7 @@ type HTTPLocationConfig struct {
 	IsBreak         bool                           `yaml:"isBreak" json:"isBreak"`                 // 终止向下解析
 	Children        []*HTTPLocationConfig          `yaml:"children" json:"children"`               // 子规则
 	Conds           *shared.HTTPRequestCondsConfig `yaml:"conds" json:"conds"`                     // 匹配条件
+	Domains         []string                       `yaml:"domains" json:"domains"`                 // 所属域名
 
 	patternType HTTPLocationPatternType // 规则类型：LocationPattern*
 	prefix      string                  // 前缀
@@ -31,14 +34,14 @@ type HTTPLocationConfig struct {
 	reverse         bool           // 是否翻转规则，比如非前缀，非路径
 }
 
-func (this *HTTPLocationConfig) Init() error {
+func (this *HTTPLocationConfig) Init(ctx context.Context) error {
 	err := this.ExtractPattern()
 	if err != nil {
 		return err
 	}
 
 	if this.Web != nil {
-		err := this.Web.Init()
+		err := this.Web.Init(ctx)
 		if err != nil {
 			return err
 		}
@@ -52,7 +55,7 @@ func (this *HTTPLocationConfig) Init() error {
 	}
 
 	if this.ReverseProxy != nil {
-		err := this.ReverseProxy.Init()
+		err := this.ReverseProxy.Init(ctx)
 		if err != nil {
 			return err
 		}
@@ -60,7 +63,7 @@ func (this *HTTPLocationConfig) Init() error {
 
 	// Children
 	for _, child := range this.Children {
-		err := child.Init()
+		err := child.Init(ctx)
 		if err != nil {
 			return err
 		}
@@ -260,7 +263,7 @@ func (this *HTTPLocationConfig) ExtractPattern() error {
 // TODO 支持子Location
 func (this *HTTPLocationConfig) Match(path string, formatter func(source string) string) (vars map[string]string, isMatched bool) {
 	// 判断条件
-	if this.Conds != nil && !this.Conds.MatchRequest(formatter) {
+	if this.Conds != nil && this.Conds.HasRequestConds() && !this.Conds.MatchRequest(formatter) {
 		return
 	}
 
@@ -299,13 +302,13 @@ func (this *HTTPLocationConfig) Match(path string, formatter func(source string)
 	if this.patternType == HTTPLocationPatternTypeExact {
 		if this.reverse {
 			if this.caseInsensitive {
-				return nil, strings.ToLower(path) != strings.ToLower(this.path)
+				return nil, !strings.EqualFold(path, this.path)
 			} else {
 				return nil, path != this.path
 			}
 		} else {
 			if this.caseInsensitive {
-				return nil, strings.ToLower(path) == strings.ToLower(this.path)
+				return nil, strings.EqualFold(path, this.path)
 			} else {
 				return nil, path == this.path
 			}

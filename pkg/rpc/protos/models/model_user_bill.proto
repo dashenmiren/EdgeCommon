@@ -11,8 +11,14 @@ message UserBill {
 	string type = 3;
 	string typeName = 4;
 	string description = 5;
-	float amount = 6;
+	double amount = 6;
 	string month = 7;
 	bool isPaid = 8;
 	int64 paidAt = 9;
+	string code = 10;
+	bool canPay = 11;
+	string dayFrom = 12;
+	string dayTo = 13;
+	string pricePeriod = 14;
+	bool isOverdue = 15; // 是否已逾期
 }

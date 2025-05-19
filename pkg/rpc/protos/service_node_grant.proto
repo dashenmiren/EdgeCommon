@@ -5,6 +5,7 @@ package pb;
 import "models/model_node_grant.proto";
 import "models/rpc_messages.proto";
 
+// 节点认证信息管理服务
 service NodeGrantService {
 	// 创建认证
 	rpc createNodeGrant (CreateNodeGrantRequest) returns (CreateNodeGrantResponse);
@@ -29,6 +30,9 @@ service NodeGrantService {
 
 	// 测试连接
 	rpc testNodeGrant (TestNodeGrantRequest) returns (TestNodeGrantResponse);
+
+	// 查找集群推荐的认证
+	rpc findSuggestNodeGrants(FindSuggestNodeGrantsRequest) returns (FindSuggestNodeGrantsResponse);
 }
 
 // 创建节点认证
@@ -38,8 +42,10 @@ message CreateNodeGrantRequest {
 	string username = 3;
 	string password = 4;
 	string privateKey = 5;
+	string passphrase = 8;
 	string description = 6;
 	int64 nodeId = 7;
+	bool su = 9;
 }
 
 message CreateNodeGrantResponse {
@@ -54,8 +60,10 @@ message UpdateNodeGrantRequest {
 	string username = 3;
 	string password = 4;
 	string privateKey = 5;
+	string passphrase = 9;
 	string description = 6;
 	int64 nodeId = 7;
+	bool su = 10;
 }
 
 // 禁用节点认证
@@ -111,4 +119,14 @@ message TestNodeGrantRequest {
 message TestNodeGrantResponse {
 	bool isOk = 1;
 	string error = 2;
+}
+
+// 查找集群推荐的认证
+message FindSuggestNodeGrantsRequest {
+	int64 nodeClusterId = 1; // 边缘节点集群
+	int64 nsClusterId = 2; // NS节点集群
+}
+
+message FindSuggestNodeGrantsResponse {
+	repeated NodeGrant nodeGrants = 1;
 }

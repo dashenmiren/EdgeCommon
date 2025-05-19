@@ -1,6 +1,9 @@
 package serverconfigs
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 func TestServerConfig_Protocols(t *testing.T) {
 	{
@@ -65,10 +68,29 @@ func TestServerConfig_Protocols(t *testing.T) {
 				},
 			},
 		}}
-		err := server.Init()
+		err := server.Init(context.TODO())
 		if err != nil {
 			t.Fatal(err)
 		}
 		t.Log(server.FullAddresses())
 	}
+}
+
+func TestServerConfig_AllStrictNames(t *testing.T) {
+	var config = &ServerConfig{
+		AliasServerNames: []string{"hello.com", ".hello.com"},
+		ServerNames: []*ServerNameConfig{
+			{
+				Name: "hello2.com",
+			},
+			{
+				SubNames: []string{"hello3.com", "hello4.com", "*.hello5.com"},
+			},
+			{
+				Name: "~hello.com",
+			},
+		},
+	}
+	t.Log(config.AllStrictNames())
+	t.Log(config.AllFuzzyNames())
 }

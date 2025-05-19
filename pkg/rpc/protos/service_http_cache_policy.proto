@@ -6,6 +6,7 @@ package pb;
 import "models/model_http_cache_policy.proto";
 import "models/rpc_messages.proto";
 
+// 缓存策略服务
 service HTTPCachePolicyService {
 	// 获取所有可用策略
 	rpc findAllEnabledHTTPCachePolicies (FindAllEnabledHTTPCachePoliciesRequest) returns (FindAllEnabledHTTPCachePoliciesResponse);
@@ -50,10 +51,11 @@ message CreateHTTPCachePolicyRequest {
 	string name = 2;
 	string description = 3;
 	bytes capacityJSON = 4;
-	int64 maxKeys = 5;
 	bytes maxSizeJSON = 6;
 	string type = 7;
 	bytes optionsJSON = 8;
+	bool syncCompressionCache = 9;
+	bytes fetchTimeoutJSON = 10; // 预热超时时间
 }
 
 message CreateHTTPCachePolicyResponse {
@@ -67,10 +69,11 @@ message UpdateHTTPCachePolicyRequest {
 	string name = 3;
 	string description = 4;
 	bytes capacityJSON = 5;
-	int64 maxKeys = 6;
 	bytes maxSizeJSON = 7;
 	string type = 8;
 	bytes optionsJSON = 9;
+	bool syncCompressionCache = 10;
+	bytes fetchTimeoutJSON = 11; // 预热超时时间
 }
 
 // 删除缓存策略
@@ -81,6 +84,8 @@ message DeleteHTTPCachePolicyRequest {
 // 计算缓存策略数量
 message CountAllEnabledHTTPCachePoliciesRequest {
 	string keyword = 1;
+	int64 nodeClusterId = 2;
+	string type = 3;
 }
 
 // 列出单页的缓存策略
@@ -88,6 +93,8 @@ message ListEnabledHTTPCachePoliciesRequest {
 	int64 offset = 1;
 	int64 size = 2;
 	string keyword = 3;
+	int64 nodeClusterId = 4;
+	string type = 5;
 }
 
 message ListEnabledHTTPCachePoliciesResponse {

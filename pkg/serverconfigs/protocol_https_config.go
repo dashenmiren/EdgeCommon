@@ -1,7 +1,9 @@
 package serverconfigs
 
 import (
+	"context"
 	"encoding/json"
+
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 )
 
@@ -16,7 +18,7 @@ func NewHTTPSProtocolConfigFromJSON(configJSON []byte) (*HTTPSProtocolConfig, er
 	return config, nil
 }
 
-// HTTPS协议配置
+// HTTPSProtocolConfig HTTPS协议配置
 type HTTPSProtocolConfig struct {
 	BaseProtocol `yaml:",inline"`
 
@@ -24,15 +26,15 @@ type HTTPSProtocolConfig struct {
 	SSLPolicy    *sslconfigs.SSLPolicy    `yaml:"sslPolicy" json:"sslPolicy"`
 }
 
-// 初始化
-func (this *HTTPSProtocolConfig) Init() error {
+// Init 初始化
+func (this *HTTPSProtocolConfig) Init(ctx context.Context) error {
 	err := this.InitBase()
 	if err != nil {
 		return err
 	}
 
 	if this.SSLPolicy != nil {
-		err := this.SSLPolicy.Init()
+		err := this.SSLPolicy.Init(ctx)
 		if err != nil {
 			return err
 		}
@@ -41,7 +43,7 @@ func (this *HTTPSProtocolConfig) Init() error {
 	return nil
 }
 
-// 转换为JSON
+// AsJSON 转换为JSON
 func (this *HTTPSProtocolConfig) AsJSON() ([]byte, error) {
 	return json.Marshal(this)
 }

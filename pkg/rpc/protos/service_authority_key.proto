@@ -16,6 +16,15 @@ service AuthorityKeyService {
 
 	// 重置Key
 	rpc resetAuthorityKey (ResetAuthorityKeyRequest) returns (RPCSuccess);
+
+	// 校验Key
+	rpc validateAuthorityKey(ValidateAuthorityKeyRequest) returns (ValidateAuthorityKeyResponse);
+
+	// 检查版本信息
+	rpc checkAuthority(CheckAuthorityRequest) returns (CheckAuthorityResponse);
+
+	// 查询授权容量
+	rpc findAuthorityQuota(FindAuthorityQuotaRequest) returns (FindAuthorityQuotaResponse);
 }
 
 // 设置Key
@@ -26,6 +35,7 @@ message UpdateAuthorityKeyRequest {
 	string hostname = 4;
 	repeated string macAddresses = 5;
 	string company = 6;
+	string requestCode = 7;
 }
 
 // 读取Key
@@ -40,4 +50,35 @@ message ReadAuthorityKeyResponse {
 // 重置Key
 message ResetAuthorityKeyRequest {
 
+}
+
+// 校验Key
+message ValidateAuthorityKeyRequest {
+	string key = 1;
+	string requestCode = 2;
+}
+
+message ValidateAuthorityKeyResponse {
+	bool isOk = 1;
+	string error = 2;
+}
+
+// 检查版本信息
+message CheckAuthorityRequest {
+
+}
+
+message CheckAuthorityResponse {
+	bool isPlus = 1;
+	string edition = 2;
+}
+
+// 查询授权容量
+message FindAuthorityQuotaRequest {
+
+}
+
+message FindAuthorityQuotaResponse {
+	int32 maxNodes = 1; // 节点数限制
+	int32 countNodes = 2; // 已占用节点数
 }

@@ -1,12 +1,13 @@
 package serverconfigs
 
 import (
+	"time"
+
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"time"
 )
 
-// websocket设置
+// HTTPWebsocketConfig websocket设置
 type HTTPWebsocketConfig struct {
 	Id   int64 `yaml:"id" json:"id"`     // ID
 	IsOn bool  `yaml:"isOn" json:"isOn"` // 是否开启

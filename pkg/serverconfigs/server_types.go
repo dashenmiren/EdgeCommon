@@ -19,27 +19,28 @@ const (
 func AllServerTypes() []maps.Map {
 	return []maps.Map{
 		{
-			"name":        "HTTP反向代理",
+			"name":        "CDN加速",
 			"code":        ServerTypeHTTPProxy,
-			"description": "可以通过反向代理访问真实源站。",
+			"description": "可以通过CDN边缘节点分发源站内容。",
 		},
 		{
-			"name":        "HTTP Web服务",
-			"code":        ServerTypeHTTPWeb,
-			"description": "普通的HTTP Web服务，可以用来访问静态文件内容。",
-		},
-		{
-			"name":        "TCP反向代理",
+			"name":        "TCP负载均衡",
 			"code":        ServerTypeTCPProxy,
-			"description": "通过反向代理访问真实的TCP服务",
+			"description": "通过反向代理访问源站TCP服务",
 		},
 		/**{
 			"name": "UNIX协议反向代理",
 			"code": ServerTypeUnixProxy,
 		},**/
 		{
-			"name": "UDP反向代理",
-			"code": ServerTypeUDPProxy,
+			"name":        "UDP负载均衡",
+			"code":        ServerTypeUDPProxy,
+			"description": "通过反向代理访问源站UDP服务",
+		},
+		{
+			"name":        "HTTP Web服务",
+			"code":        ServerTypeHTTPWeb,
+			"description": "普通的HTTP Web服务，可以用来访问边缘节点上的静态文件内容。",
 		},
 	}
 }
@@ -54,9 +55,9 @@ func FindServerType(code string) maps.Map {
 	return nil
 }
 
-// AllServerProtocolsForType 获取所有协议
-func AllServerProtocolsForType(serverType ServerType) []maps.Map {
-	protocols := []maps.Map{
+// FindAllServerProtocols 查找所有协议
+func FindAllServerProtocols() []maps.Map {
+	return []maps.Map{
 		{
 			"name":        "HTTP",
 			"code":        "http",
@@ -88,10 +89,13 @@ func AllServerProtocolsForType(serverType ServerType) []maps.Map {
 			"serverTypes": []ServerType{ServerTypeUDPProxy},
 		},
 	}
+}
 
-	result := []maps.Map{}
-	for _, p := range protocols {
-		serverTypes := p.GetSlice("serverTypes")
+// FindAllServerProtocolsForType 获取所有协议
+func FindAllServerProtocolsForType(serverType ServerType) []maps.Map {
+	var result = []maps.Map{}
+	for _, p := range FindAllServerProtocols() {
+		var serverTypes = p.GetSlice("serverTypes")
 		if lists.Contains(serverTypes, serverType) {
 			result = append(result, p)
 		}

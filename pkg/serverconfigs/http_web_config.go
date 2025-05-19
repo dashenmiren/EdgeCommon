@@ -1,6 +1,8 @@
 package serverconfigs
 
 import (
+	"context"
+
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
@@ -10,8 +12,9 @@ type HTTPWebConfig struct {
 	IsOn               bool                                `yaml:"isOn" json:"isOn"`                             // 是否启用
 	Locations          []*HTTPLocationConfig               `yaml:"locations" json:"locations"`                   // 路径规则 TODO
 	LocationRefs       []*HTTPLocationRef                  `yaml:"locationRefs" json:"locationRefs"`             // 路径规则应用
-	GzipRef            *HTTPGzipRef                        `yaml:"gzipRef" json:"gzipRef"`                       // Gzip引用
-	Gzip               *HTTPGzipConfig                     `yaml:"gzip" json:"gzip"`                             // Gzip配置
+	Compression        *HTTPCompressionConfig              `yaml:"compression" json:"compression"`               // 压缩配置
+	Optimization       *HTTPPageOptimizationConfig         `yaml:"optimization" json:"optimization"`             // 页面优化配置
+	WebP               *WebPImageConfig                    `yaml:"webp" json:"webp"`                             // WebP配置
 	Charset            *HTTPCharsetConfig                  `yaml:"charset" json:"charset"`                       // 字符编码
 	Shutdown           *HTTPShutdownConfig                 `yaml:"shutdown" json:"shutdown"`                     // 临时关闭配置
 	Pages              []*HTTPPageConfig                   `yaml:"pages" json:"pages"`                           // 特殊页面配置
@@ -29,6 +32,8 @@ type HTTPWebConfig struct {
 	RewriteRules       []*HTTPRewriteRule                  `yaml:"rewriteRules" json:"rewriteRules"`             // 重写规则
 	FastcgiRef         *HTTPFastcgiRef                     `yaml:"fastcgiRef" json:"fastcgiRef"`                 // Fastcgi引用
 	FastcgiList        []*HTTPFastcgiConfig                `yaml:"fastcgiList" json:"fastcgiList"`               // Fastcgi配置
+	UserAgent          *UserAgentConfig                    `yaml:"userAgent" json:"userAgent"`                   // UserAgent配置
+	HLS                *HLSConfig                          `yaml:"hls" json:"hls"`                               // HLS配置
 
 	RequestHeaderPolicyRef  *shared.HTTPHeaderPolicyRef `yaml:"requestHeaderPolicyRef" json:"requestHeaderPolicyRef"`   // 请求Header
 	RequestHeaderPolicy     *shared.HTTPHeaderPolicy    `yaml:"requestHeaderPolicy" json:"requestHeaderPolicy"`         // 请求Header策略
@@ -39,9 +44,21 @@ type HTTPWebConfig struct {
 	FilterPolicies []*HTTPFilterPolicy `yaml:"filterPolicies" json:"filterPolicies"` // 筛选策略
 
 	HostRedirects []*HTTPHostRedirectConfig `yaml:"hostRedirects" json:"hostRedirects"` // 主机跳转
+	Auth          *HTTPAuthConfig           `yaml:"auth" json:"auth"`                   // 认证配置
+	Referers      *ReferersConfig           `yaml:"referers" json:"referers"`           // 防盗链设置
+
+	RemoteAddr   *HTTPRemoteAddrConfig `yaml:"remoteAddr" json:"remoteAddr"`     // 客户端IP获取方式
+	MergeSlashes bool                  `yaml:"mergeSlashes" json:"mergeSlashes"` // 是否合并路径中的斜杠（/）
+
+	RequestLimit   *HTTPRequestLimitConfig   `yaml:"requestLimit" json:"requestLimit"`     // 并发请求限制
+	RequestScripts *HTTPRequestScriptsConfig `yaml:"requestScripts" json:"requestScripts"` // HTTP请求相关脚本
+
+	// UAM, CC ...
+	UAM *UAMConfig    `yaml:"uam" json:"uam"`
+	CC  *HTTPCCConfig `yaml:"cc" json:"cc"`
 }
 
-func (this *HTTPWebConfig) Init() error {
+func (this *HTTPWebConfig) Init(ctx context.Context) error {
 	// root
 	if this.Root != nil {
 		err := this.Root.Init()
@@ -53,16 +70,24 @@ func (this *HTTPWebConfig) Init() error {
 	// 路径规则
 	if len(this.Locations) > 0 {
 		for _, location := range this.Locations {
-			err := location.Init()
+			err := location.Init(ctx)
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	// gzip
-	if this.Gzip != nil {
-		err := this.Gzip.Init()
+	// compression
+	if this.Compression != nil {
+		err := this.Compression.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// optimization
+	if this.Optimization != nil {
+		err := this.Optimization.Init()
 		if err != nil {
 			return err
 		}
@@ -219,6 +244,78 @@ func (this *HTTPWebConfig) Init() error {
 	// fastcgi
 	for _, fastcgi := range this.FastcgiList {
 		err := fastcgi.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// auth
+	if this.Auth != nil {
+		err := this.Auth.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// webp
+	if this.WebP != nil {
+		err := this.WebP.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// remoteAddr
+	if this.RemoteAddr != nil {
+		err := this.RemoteAddr.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// request limit
+	if this.RequestLimit != nil {
+		err := this.RequestLimit.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// request script
+	if this.RequestScripts != nil {
+		err := this.RequestScripts.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// uam
+	if this.UAM != nil {
+		err := this.UAM.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// cc
+	if this.CC != nil {
+		err := this.CC.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// user agent
+	if this.UserAgent != nil {
+		err := this.UserAgent.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// hls
+	if this.HLS != nil {
+		err := this.HLS.Init()
 		if err != nil {
 			return err
 		}

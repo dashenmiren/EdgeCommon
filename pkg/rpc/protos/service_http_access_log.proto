@@ -15,6 +15,9 @@ service HTTPAccessLogService {
 
 	// 查找单个日志
 	rpc findHTTPAccessLog (FindHTTPAccessLogRequest) returns (FindHTTPAccessLogResponse);
+
+	// 查找日志分区
+	rpc findHTTPAccessLogPartitions(FindHTTPAccessLogPartitionsRequest) returns (FindHTTPAccessLogPartitionsResponse);
 }
 
 // 创建访问日志
@@ -32,6 +35,8 @@ message ListHTTPAccessLogsRequest {
 	int64 serverId = 2; // 服务ID
 	int64 size = 3; // 单页条数
 	string day = 4; // 日期，格式YYYYMMDD
+	string hourFrom = 17; // 开始小时
+	string hourTo = 18; // 结束小时
 	bool reverse = 5; // 是否反向查找，可选
 	bool hasError = 6; // 是否有错误，可选
 	int64 firewallPolicyId = 7; // WAF策略ID，可选
@@ -40,6 +45,11 @@ message ListHTTPAccessLogsRequest {
 	int64 userId = 10; // 用户ID
 	bool hasFirewallPolicy = 11; // 是否有WAF策略
 	string keyword = 12; // 关键词
+	string ip = 13;
+	string domain = 14;
+	int64 nodeClusterId = 15;
+	int64 nodeId = 16;
+	int32 partition = 19; // 分区
 }
 
 message ListHTTPAccessLogsResponse {
@@ -57,3 +67,14 @@ message FindHTTPAccessLogRequest {
 message FindHTTPAccessLogResponse {
 	HTTPAccessLog httpAccessLog = 1;
 }
+
+// 查找日志分区
+message FindHTTPAccessLogPartitionsRequest {
+	string day = 1; // YYYYMMDD
+}
+
+message FindHTTPAccessLogPartitionsResponse {
+	repeated int32  partitions = 1;
+	repeated int32 reversePartitions = 2;
+}
+

@@ -1,11 +1,12 @@
 package serverconfigs
 
 import (
+	"context"
+	"sync"
+
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/schedulingconfigs"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"github.com/iwind/TeaGo/lists"
-	"sync"
 )
 
 type RequestHostType = int8
@@ -16,7 +17,13 @@ const (
 	RequestHostTypeCustomized  RequestHostType = 2
 )
 
-// 反向代理设置
+func NewReverseProxyConfig() *ReverseProxyConfig {
+	return &ReverseProxyConfig{
+		Retry50X: false, // 不要改为true，太多人使用50x作为特殊业务代码使用了！
+	}
+}
+
+// ReverseProxyConfig 反向代理设置
 type ReverseProxyConfig struct {
 	Id                int64             `yaml:"id" json:"id"`                               // ID
 	IsOn              bool              `yaml:"isOn" json:"isOn"`                           // 是否启用
@@ -33,40 +40,121 @@ type ReverseProxyConfig struct {
 	MaxConns     int                  `yaml:"maxConns" json:"maxConns"`         // 最大并发连接数 TODO
 	MaxIdleConns int                  `yaml:"maxIdleConns" json:"maxIdleConns"` // 最大空闲连接数 TODO
 
-	StripPrefix     string          `yaml:"stripPrefix" json:"stripPrefix"`         // 去除URL前缀
-	RequestHostType RequestHostType `yaml:"requestHostType" json:"requestHostType"` // 请求Host类型
-	RequestHost     string          `yaml:"requestHost" json:"requestHost"`         // 请求Host，支持变量
-	RequestURI      string          `yaml:"requestURI" json:"requestURI"`           // 请求URI，支持变量，如果同时定义了StripPrefix，则先执行StripPrefix
+	StripPrefix              string          `yaml:"stripPrefix" json:"stripPrefix"`                           // 去除URL前缀
+	RequestHostType          RequestHostType `yaml:"requestHostType" json:"requestHostType"`                   // 请求Host类型
+	RequestHost              string          `yaml:"requestHost" json:"requestHost"`                           // 请求Host，支持变量
+	RequestURI               string          `yaml:"requestURI" json:"requestURI"`                             // 请求URI，支持变量，如果同时定义了StripPrefix，则先执行StripPrefix
+	RequestHostExcludingPort bool            `yaml:"requestHostExcludingPort" json:"requestHostExcludingPort"` // 请求Host不包括端口
+	Retry50X                 bool            `yaml:"retry50X" json:"retry50X"`                                 // 50x 错误重试
+	Retry40X                 bool            `yaml:"retry40X" json:"retry40X"`                                 // 40x 内容重试源站
 
 	AddHeaders []string `yaml:"addHeaders" json:"addHeaders"` // 自动添加的Header
 
 	AutoFlush bool `yaml:"autoFlush" json:"autoFlush"` // 是否自动刷新缓冲区，在比如SSE（server-sent events）场景下很有用
 
+	ProxyProtocol   *ProxyProtocolConfig  `yaml:"proxyProtocol" json:"proxyProtocol"`     // PROXY Protocol
+	FollowRedirects bool                  `yaml:"followRedirects" json:"followRedirects"` // 回源跟随
+	FollowProtocol  *FollowProtocolConfig `yaml:"followProtocol" json:"followProtocol"`   // 协议跟随 TODO
+
 	requestHostHasVariables bool
 	requestURIHasVariables  bool
 
-	hasPrimaryOrigins  bool
-	hasBackupOrigins   bool
-	schedulingIsBackup bool
-	schedulingObject   schedulingconfigs.SchedulingInterface
-	schedulingLocker   sync.Mutex
+	schedulingGroupMap map[string]*SchedulingGroup // domain => *SchedulingGroup
+	schedulingLocker   sync.RWMutex
 
-	addXRealIPHeader         bool
-	addXForwardedForHeader   bool
-	addForwardedHeader       bool
+	addXRealIPHeader       bool
+	addXForwardedForHeader bool
+	//addForwardedHeader       bool
 	addXForwardedByHeader    bool
 	addXForwardedHostHeader  bool
 	addXForwardedProtoHeader bool
 }
 
-// 初始化
-func (this *ReverseProxyConfig) Init() error {
+// Init 初始化
+func (this *ReverseProxyConfig) Init(ctx context.Context) error {
 	this.requestHostHasVariables = configutils.HasVariables(this.RequestHost)
 	this.requestURIHasVariables = configutils.HasVariables(this.RequestURI)
 
-	this.hasPrimaryOrigins = len(this.PrimaryOrigins) > 0
-	this.hasBackupOrigins = len(this.BackupOrigins) > 0
+	// 将源站分组
+	this.schedulingGroupMap = map[string]*SchedulingGroup{}
+	var hasDomainGroups = false
+	for _, origin := range this.PrimaryOrigins {
+		if len(origin.Domains) == 0 {
+			group, ok := this.schedulingGroupMap[""]
+			if !ok {
+				group = &SchedulingGroup{}
+				if this.Scheduling != nil {
+					group.Scheduling = this.Scheduling.Clone()
+				}
+				this.schedulingGroupMap[""] = group
+			}
+			group.PrimaryOrigins = append(group.PrimaryOrigins, origin)
+		} else {
+			hasDomainGroups = true
+			for _, domain := range origin.Domains {
+				group, ok := this.schedulingGroupMap[domain]
+				if !ok {
+					group = &SchedulingGroup{}
+					if this.Scheduling != nil {
+						group.Scheduling = this.Scheduling.Clone()
+					}
+					this.schedulingGroupMap[domain] = group
+				}
+				group.PrimaryOrigins = append(group.PrimaryOrigins, origin)
+			}
+		}
+	}
 
+	for _, origin := range this.BackupOrigins {
+		if len(origin.Domains) == 0 {
+			group, ok := this.schedulingGroupMap[""]
+			if !ok {
+				group = &SchedulingGroup{}
+				if this.Scheduling != nil {
+					group.Scheduling = this.Scheduling.Clone()
+				}
+				this.schedulingGroupMap[""] = group
+			}
+			group.BackupOrigins = append(group.BackupOrigins, origin)
+		} else {
+			hasDomainGroups = true
+			for _, domain := range origin.Domains {
+				group, ok := this.schedulingGroupMap[domain]
+				if !ok {
+					group = &SchedulingGroup{}
+					if this.Scheduling != nil {
+						group.Scheduling = this.Scheduling.Clone()
+					}
+					this.schedulingGroupMap[domain] = group
+				}
+				group.BackupOrigins = append(group.BackupOrigins, origin)
+			}
+		}
+	}
+
+	// 再次分解
+	if hasDomainGroups {
+		defaultGroup, ok := this.schedulingGroupMap[""]
+		if ok {
+			for domain, group := range this.schedulingGroupMap {
+				if domain == "" {
+					continue
+				}
+				group.PrimaryOrigins = append(group.PrimaryOrigins, defaultGroup.PrimaryOrigins...)
+				group.BackupOrigins = append(group.BackupOrigins, defaultGroup.BackupOrigins...)
+			}
+		}
+	}
+
+	// 初始化分组
+	for _, group := range this.schedulingGroupMap {
+		err := group.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// 初始化Origin
 	for _, origins := range [][]*OriginConfig{this.PrimaryOrigins, this.BackupOrigins} {
 		for _, origin := range origins {
 			// 覆盖参数设置
@@ -90,7 +178,7 @@ func (this *ReverseProxyConfig) Init() error {
 			}
 
 			// 初始化
-			err := origin.Init()
+			err := origin.Init(ctx)
 			if err != nil {
 				return err
 			}
@@ -98,7 +186,7 @@ func (this *ReverseProxyConfig) Init() error {
 	}
 
 	// scheduling
-	this.SetupScheduling(false)
+	this.SetupScheduling(false, false, true)
 
 	// Header
 	if len(this.AddHeaders) == 0 {
@@ -116,93 +204,123 @@ func (this *ReverseProxyConfig) Init() error {
 		this.addXForwardedProtoHeader = lists.ContainsString(this.AddHeaders, "X-Forwarded-Proto")
 	}
 
+	// PROXY Protocol
+	if this.ProxyProtocol != nil {
+		err := this.ProxyProtocol.Init()
+		if err != nil {
+			return err
+		}
+	}
+
+	// follow protocol
+	if this.FollowProtocol != nil {
+		err := this.FollowProtocol.Init()
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-// 添加主源站配置
+// AddPrimaryOrigin 添加主源站配置
 func (this *ReverseProxyConfig) AddPrimaryOrigin(origin *OriginConfig) {
 	this.PrimaryOrigins = append(this.PrimaryOrigins, origin)
 }
 
-// 添加备用源站配置
+// AddBackupOrigin 添加备用源站配置
 func (this *ReverseProxyConfig) AddBackupOrigin(origin *OriginConfig) {
 	this.BackupOrigins = append(this.BackupOrigins, origin)
 }
 
-// 取得下一个可用的后端服务
+// NextOrigin 取得下一个可用的源站
 func (this *ReverseProxyConfig) NextOrigin(call *shared.RequestCall) *OriginConfig {
+	// 这里不能使用RLock/RUnlock，因为在NextOrigin()方法中可能会对调度对象动态调整
 	this.schedulingLocker.Lock()
 	defer this.schedulingLocker.Unlock()
 
-	if this.schedulingObject == nil {
+	if len(this.schedulingGroupMap) == 0 {
 		return nil
 	}
 
-	if this.Scheduling != nil && call != nil && call.Options != nil {
-		for k, v := range this.Scheduling.Options {
-			call.Options[k] = v
+	// 空域名
+	if call == nil || len(call.Domain) == 0 {
+		group, ok := this.schedulingGroupMap[""]
+		if ok {
+			return group.NextOrigin(call)
 		}
+		return nil
 	}
 
-	candidate := this.schedulingObject.Next(call)
-	if candidate == nil {
-		// 启用备用服务器
-		if !this.schedulingIsBackup {
-			this.SetupScheduling(true)
-
-			candidate = this.schedulingObject.Next(call)
-			if candidate == nil {
-				return nil
+	// 按域名匹配
+	for domainPattern, group := range this.schedulingGroupMap {
+		if len(domainPattern) > 0 && configutils.MatchDomain(domainPattern, call.Domain) {
+			origin := group.NextOrigin(call)
+			if origin != nil {
+				return origin
 			}
 		}
+	}
 
-		if candidate == nil {
-			return nil
+	// 再次查找没有设置域名的分组
+	group, ok := this.schedulingGroupMap[""]
+	if ok {
+		return group.NextOrigin(call)
+	}
+
+	return nil
+}
+
+// AnyOrigin 取下一个任意的源站
+func (this *ReverseProxyConfig) AnyOrigin(call *shared.RequestCall, excludingOriginIds []int64) *OriginConfig {
+	this.schedulingLocker.Lock()
+	defer this.schedulingLocker.Unlock()
+
+	if len(this.schedulingGroupMap) == 0 {
+		return nil
+	}
+
+	// 空域名
+	if call == nil || len(call.Domain) == 0 {
+		group, ok := this.schedulingGroupMap[""]
+		if ok {
+			return group.AnyOrigin(excludingOriginIds)
+		}
+		return nil
+	}
+
+	// 按域名匹配
+	for domainPattern, group := range this.schedulingGroupMap {
+		if len(domainPattern) > 0 && configutils.MatchDomain(domainPattern, call.Domain) {
+			origin := group.AnyOrigin(excludingOriginIds)
+			if origin != nil {
+				return origin
+			}
 		}
 	}
 
-	return candidate.(*OriginConfig)
+	// 再次查找没有设置域名的分组
+	group, ok := this.schedulingGroupMap[""]
+	if ok {
+		return group.AnyOrigin(excludingOriginIds)
+	}
+
+	return nil
 }
 
-// 设置调度算法
-func (this *ReverseProxyConfig) SetupScheduling(isBackup bool) {
-	if !isBackup {
+// SetupScheduling 设置调度算法
+func (this *ReverseProxyConfig) SetupScheduling(isBackup bool, checkOk bool, lock bool) {
+	if lock {
 		this.schedulingLocker.Lock()
 		defer this.schedulingLocker.Unlock()
 	}
-	this.schedulingIsBackup = isBackup
 
-	if this.Scheduling == nil {
-		this.schedulingObject = &schedulingconfigs.RandomScheduling{}
-	} else {
-		typeCode := this.Scheduling.Code
-		s := schedulingconfigs.FindSchedulingType(typeCode)
-		if s == nil {
-			this.Scheduling = nil
-			this.schedulingObject = &schedulingconfigs.RandomScheduling{}
-		} else {
-			this.schedulingObject = s["instance"].(schedulingconfigs.SchedulingInterface)
-		}
+	for _, group := range this.schedulingGroupMap {
+		group.SetupScheduling(isBackup, checkOk)
 	}
-
-	if !isBackup {
-		for _, origin := range this.PrimaryOrigins {
-			if origin.IsOn {
-				this.schedulingObject.Add(origin)
-			}
-		}
-	} else {
-		for _, origin := range this.BackupOrigins {
-			if origin.IsOn {
-				this.schedulingObject.Add(origin)
-			}
-		}
-	}
-
-	this.schedulingObject.Start()
 }
 
-// 获取调度配置对象
+// FindSchedulingConfig 获取调度配置对象
 func (this *ReverseProxyConfig) FindSchedulingConfig() *SchedulingConfig {
 	if this.Scheduling == nil {
 		this.Scheduling = &SchedulingConfig{Code: "random"}
@@ -210,37 +328,42 @@ func (this *ReverseProxyConfig) FindSchedulingConfig() *SchedulingConfig {
 	return this.Scheduling
 }
 
-// 判断RequestHost是否有变量
+// RequestHostHasVariables 判断RequestHost是否有变量
 func (this *ReverseProxyConfig) RequestHostHasVariables() bool {
 	return this.requestHostHasVariables
 }
 
-// 判断RequestURI是否有变量
+// RequestURIHasVariables 判断RequestURI是否有变量
 func (this *ReverseProxyConfig) RequestURIHasVariables() bool {
 	return this.requestURIHasVariables
 }
 
-// 是否添加X-Real-IP
+// ShouldAddXRealIPHeader 是否添加X-Real-IP
 func (this *ReverseProxyConfig) ShouldAddXRealIPHeader() bool {
 	return this.addXRealIPHeader
 }
 
-// 是否添加X-Forwarded-For
+// ShouldAddXForwardedForHeader 是否添加X-Forwarded-For
 func (this *ReverseProxyConfig) ShouldAddXForwardedForHeader() bool {
 	return this.addXForwardedForHeader
 }
 
-// 是否添加X-Forwarded-By
+// ShouldAddXForwardedByHeader 是否添加X-Forwarded-By
 func (this *ReverseProxyConfig) ShouldAddXForwardedByHeader() bool {
 	return this.addXForwardedByHeader
 }
 
-// 是否添加X-Forwarded-Host
+// ShouldAddXForwardedHostHeader 是否添加X-Forwarded-Host
 func (this *ReverseProxyConfig) ShouldAddXForwardedHostHeader() bool {
 	return this.addXForwardedHostHeader
 }
 
-// 是否添加X-Forwarded-Proto
+// ShouldAddXForwardedProtoHeader 是否添加X-Forwarded-Proto
 func (this *ReverseProxyConfig) ShouldAddXForwardedProtoHeader() bool {
 	return this.addXForwardedProtoHeader
+}
+
+// ResetScheduling 重置调度算法
+func (this *ReverseProxyConfig) ResetScheduling() {
+	this.SetupScheduling(false, true, true)
 }

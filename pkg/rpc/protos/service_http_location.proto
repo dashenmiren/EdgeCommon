@@ -5,6 +5,7 @@ package pb;
 
 import "models/rpc_messages.proto";
 
+// 路由规则服务
 service HTTPLocationService {
 	// 创建路径规则
 	rpc createHTTPLocation (CreateHTTPLocationRequest) returns (CreateHTTPLocationResponse);
@@ -36,6 +37,7 @@ message CreateHTTPLocationRequest {
 	string pattern = 4;
 	bool isBreak = 5;
 	bytes condsJSON = 6;
+	repeated string domains = 7;
 }
 
 message CreateHTTPLocationResponse {
@@ -51,6 +53,7 @@ message UpdateHTTPLocationRequest {
 	bool isOn = 5;
 	bool isBreak = 6;
 	bytes condsJSON = 7;
+	repeated string domains = 8;
 }
 
 // 查找路径规则配置

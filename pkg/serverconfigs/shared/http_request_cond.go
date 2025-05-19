@@ -5,12 +5,10 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"github.com/iwind/TeaGo/Tea"
 	"github.com/iwind/TeaGo/lists"
 	"github.com/iwind/TeaGo/types"
 	"github.com/iwind/TeaGo/utils/string"
 	"net"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -26,9 +24,10 @@ type HTTPRequestCond struct {
 	// ${arg.name}, ${requestPath}
 	Param string `yaml:"param" json:"param"`
 
-	Operator  RequestCondOperator `yaml:"operator" json:"operator"`   // 运算符
-	Value     string              `yaml:"value" json:"value"`         // 对比值
-	IsReverse bool                `yaml:"isReverse" json:"isReverse"` // 是否反向匹配
+	Operator          RequestCondOperator `yaml:"operator" json:"operator"`                   // 运算符
+	Value             string              `yaml:"value" json:"value"`                         // 对比值
+	IsReverse         bool                `yaml:"isReverse" json:"isReverse"`                 // 是否反向匹配
+	IsCaseInsensitive bool                `yaml:"isCaseInsensitive" json:"isCaseInsensitive"` // 大小写是否敏感
 
 	isInt   bool
 	isFloat bool
@@ -49,7 +48,25 @@ func (this *HTTPRequestCond) Init() error {
 		RequestCondOperatorRegexp,
 		RequestCondOperatorNotRegexp,
 	}, this.Operator) {
-		reg, err := regexp.Compile(this.Value)
+		var value = this.Value
+		if this.IsCaseInsensitive && !strings.HasPrefix(this.Value, "(?i)") {
+			value = "(?i)" + value
+		}
+		reg, err := regexp.Compile(value)
+		if err != nil {
+			return err
+		}
+		this.regValue = reg
+	} else if lists.ContainsString([]string{
+		RequestCondOperatorWildcardMatch,
+		RequestCondOperatorWildcardNotMatch,
+	}, this.Operator) {
+		var pieces = strings.Split(this.Value, "*")
+		for index, piece := range pieces {
+			pieces[index] = regexp.QuoteMeta(piece)
+		}
+		var pattern = strings.Join(pieces, "(.*)")
+		reg, err := regexp.Compile("(?i)" /** 大小写不敏感 **/ + "^" + pattern + "$")
 		if err != nil {
 			return err
 		}
@@ -157,6 +174,16 @@ func (this *HTTPRequestCond) match(formatter func(source string) string) bool {
 			return false
 		}
 		return !this.regValue.MatchString(paramValue)
+	case RequestCondOperatorWildcardMatch:
+		if this.regValue == nil {
+			return false
+		}
+		return this.regValue.MatchString(paramValue)
+	case RequestCondOperatorWildcardNotMatch:
+		if this.regValue == nil {
+			return false
+		}
+		return !this.regValue.MatchString(paramValue)
 	case RequestCondOperatorEqInt:
 		return this.isInt && paramValue == this.Value
 	case RequestCondOperatorEqFloat:
@@ -186,23 +213,41 @@ func (this *HTTPRequestCond) match(formatter func(source string) string) bool {
 	case RequestCondOperatorMod100:
 		return types.Int64(paramValue)%100 == types.Int64(this.Value)
 	case RequestCondOperatorEqString:
+		if this.IsCaseInsensitive {
+			return strings.EqualFold(paramValue, this.Value)
+		}
 		return paramValue == this.Value
 	case RequestCondOperatorNeqString:
+		if this.IsCaseInsensitive {
+			return !strings.EqualFold(paramValue, this.Value)
+		}
 		return paramValue != this.Value
 	case RequestCondOperatorHasPrefix:
+		if this.IsCaseInsensitive {
+			return strings.HasPrefix(strings.ToUpper(paramValue), strings.ToUpper(this.Value))
+		}
 		return strings.HasPrefix(paramValue, this.Value)
 	case RequestCondOperatorHasSuffix:
+		if this.IsCaseInsensitive {
+			return strings.HasSuffix(strings.ToUpper(paramValue), strings.ToUpper(this.Value))
+		}
 		return strings.HasSuffix(paramValue, this.Value)
 	case RequestCondOperatorContainsString:
+		if this.IsCaseInsensitive {
+			return strings.Contains(strings.ToUpper(paramValue), strings.ToUpper(this.Value))
+		}
 		return strings.Contains(paramValue, this.Value)
 	case RequestCondOperatorNotContainsString:
+		if this.IsCaseInsensitive {
+			return !strings.Contains(strings.ToUpper(paramValue), strings.ToUpper(this.Value))
+		}
 		return !strings.Contains(paramValue, this.Value)
 	case RequestCondOperatorEqIP:
-		ip := net.ParseIP(paramValue)
+		var ip = net.ParseIP(paramValue)
 		if ip == nil {
 			return false
 		}
-		return this.isIP && bytes.Compare(this.ipValue, ip) == 0
+		return this.isIP && ip.Equal(this.ipValue)
 	case RequestCondOperatorGtIP:
 		ip := net.ParseIP(paramValue)
 		if ip == nil {
@@ -272,9 +317,29 @@ func (this *HTTPRequestCond) match(formatter func(source string) string) bool {
 			return false
 		}
 	case RequestCondOperatorIn:
-		return lists.ContainsString(this.arrayValue, paramValue)
+		if this.IsCaseInsensitive {
+			paramValue = strings.ToUpper(paramValue)
+			for _, v := range this.arrayValue {
+				if strings.ToUpper(v) == paramValue {
+					return true
+				}
+			}
+			return false
+		} else {
+			return lists.ContainsString(this.arrayValue, paramValue)
+		}
 	case RequestCondOperatorNotIn:
-		return !lists.ContainsString(this.arrayValue, paramValue)
+		if this.IsCaseInsensitive {
+			paramValue = strings.ToUpper(paramValue)
+			for _, v := range this.arrayValue {
+				if strings.ToUpper(v) == paramValue {
+					return false
+				}
+			}
+			return true
+		} else {
+			return !lists.ContainsString(this.arrayValue, paramValue)
+		}
 	case RequestCondOperatorFileExt:
 		ext := filepath.Ext(paramValue)
 		if len(ext) > 0 {
@@ -330,32 +395,32 @@ func (this *HTTPRequestCond) match(formatter func(source string) string) bool {
 		return this.ipToInt64(net.ParseIP(paramValue))%10 == types.Int64(this.Value)
 	case RequestCondOperatorIPMod100:
 		return this.ipToInt64(net.ParseIP(paramValue))%100 == types.Int64(this.Value)
-	case RequestCondOperatorFileExist:
-		index := strings.Index(paramValue, "?")
-		if index > -1 {
-			paramValue = paramValue[:index]
-		}
-		if len(paramValue) == 0 {
-			return false
-		}
-		if !filepath.IsAbs(paramValue) {
-			paramValue = Tea.Root + Tea.DS + paramValue
-		}
-		stat, err := os.Stat(paramValue)
-		return err == nil && !stat.IsDir()
-	case RequestCondOperatorFileNotExist:
-		index := strings.Index(paramValue, "?")
-		if index > -1 {
-			paramValue = paramValue[:index]
-		}
-		if len(paramValue) == 0 {
-			return true
-		}
-		if !filepath.IsAbs(paramValue) {
-			paramValue = Tea.Root + Tea.DS + paramValue
-		}
-		stat, err := os.Stat(paramValue)
-		return err != nil || stat.IsDir()
+		/**case RequestCondOperatorFileExist:
+			index := strings.Index(paramValue, "?")
+			if index > -1 {
+				paramValue = paramValue[:index]
+			}
+			if len(paramValue) == 0 {
+				return false
+			}
+			if !filepath.IsAbs(paramValue) {
+				paramValue = Tea.Root + Tea.DS + paramValue
+			}
+			stat, err := os.Stat(paramValue)
+			return err == nil && !stat.IsDir()
+		case RequestCondOperatorFileNotExist:
+			index := strings.Index(paramValue, "?")
+			if index > -1 {
+				paramValue = paramValue[:index]
+			}
+			if len(paramValue) == 0 {
+				return true
+			}
+			if !filepath.IsAbs(paramValue) {
+				paramValue = Tea.Root + Tea.DS + paramValue
+			}
+			stat, err := os.Stat(paramValue)
+			return err != nil || stat.IsDir()**/
 	}
 
 	return false

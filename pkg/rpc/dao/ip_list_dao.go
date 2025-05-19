@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"encoding/json"
+
 	"github.com/dashenmiren/EdgeCommon/pkg/errors"
 	"github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
 	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/firewallconfigs"
@@ -15,7 +16,7 @@ type IPListDAO struct {
 	BaseDAO
 }
 
-// 查找服务的允许IP列表
+// FindAllowIPListIdWithServerId 查找服务的允许IP列表
 func (this *IPListDAO) FindAllowIPListIdWithServerId(ctx context.Context, serverId int64) (int64, error) {
 	webConfig, err := SharedHTTPWebDAO.FindWebConfigWithServerId(ctx, serverId)
 	if err != nil {
@@ -30,7 +31,7 @@ func (this *IPListDAO) FindAllowIPListIdWithServerId(ctx context.Context, server
 	return webConfig.FirewallPolicy.Inbound.AllowListRef.ListId, nil
 }
 
-// 查找服务的禁止IP列表
+// FindDenyIPListIdWithServerId 查找服务的禁止IP列表
 func (this *IPListDAO) FindDenyIPListIdWithServerId(ctx context.Context, serverId int64) (int64, error) {
 	webConfig, err := SharedHTTPWebDAO.FindWebConfigWithServerId(ctx, serverId)
 	if err != nil {
@@ -45,7 +46,7 @@ func (this *IPListDAO) FindDenyIPListIdWithServerId(ctx context.Context, serverI
 	return webConfig.FirewallPolicy.Inbound.DenyListRef.ListId, nil
 }
 
-// 为服务创建IP名单
+// CreateIPListForServerId 为服务创建IP名单
 func (this *IPListDAO) CreateIPListForServerId(ctx context.Context, serverId int64, listType string) (int64, error) {
 	webConfig, err := SharedHTTPWebDAO.FindWebConfigWithServerId(ctx, serverId)
 	if err != nil {
@@ -56,7 +57,7 @@ func (this *IPListDAO) CreateIPListForServerId(ctx context.Context, serverId int
 	}
 	if webConfig.FirewallPolicy == nil || webConfig.FirewallPolicy.Id == 0 {
 		isOn := webConfig.FirewallRef != nil && webConfig.FirewallRef.IsOn
-		_, err = SharedHTTPWebDAO.InitEmptyHTTPFirewallPolicy(ctx, serverId, webConfig.Id, isOn)
+		_, err = SharedHTTPWebDAO.InitEmptyHTTPFirewallPolicy(ctx, 0, serverId, webConfig.Id, isOn)
 		if err != nil {
 			return 0, errors.Wrap(err)
 		}
@@ -102,6 +103,7 @@ func (this *IPListDAO) CreateIPListForServerId(ctx context.Context, serverId int
 		Type:        listType,
 		Name:        "IP名单",
 		Code:        listType,
+		ServerId:    serverId,
 		TimeoutJSON: nil,
 	})
 	if err != nil {

@@ -1,14 +1,15 @@
 package schedulingconfigs
 
 import (
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/maps"
 	"math"
 	"math/rand"
 	"time"
+
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/iwind/TeaGo/maps"
 )
 
-// 随机调度算法
+// RandomScheduling 随机调度算法
 type RandomScheduling struct {
 	Scheduling
 
@@ -16,7 +17,7 @@ type RandomScheduling struct {
 	count uint // 实际总的服务器数
 }
 
-// 启动
+// Start 启动
 func (this *RandomScheduling) Start() {
 	sumWeight := uint(0)
 	for _, c := range this.Candidates {
@@ -55,7 +56,7 @@ func (this *RandomScheduling) Start() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-// 获取下一个候选对象
+// Next 获取下一个候选对象
 func (this *RandomScheduling) Next(call *shared.RequestCall) CandidateInterface {
 	if this.count == 0 {
 		return nil
@@ -67,12 +68,12 @@ func (this *RandomScheduling) Next(call *shared.RequestCall) CandidateInterface 
 	return this.array[index]
 }
 
-// 获取简要信息
+// Summary 获取简要信息
 func (this *RandomScheduling) Summary() maps.Map {
 	return maps.Map{
 		"code":        "random",
 		"name":        "Random随机算法",
 		"description": "根据权重设置随机分配源站",
-		"networks":    []string{"http", "tcp"},
+		"networks":    []string{"http", "tcp", "udp", "unix"},
 	}
 }
