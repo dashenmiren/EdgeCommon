@@ -33,7 +33,6 @@ type ServerConfig struct {
 	HTTPS *HTTPSProtocolConfig `yaml:"https" json:"https"` // HTTPS配置
 	TCP   *TCPProtocolConfig   `yaml:"tcp" json:"tcp"`     // TCP配置
 	TLS   *TLSProtocolConfig   `yaml:"tls" json:"tls"`     // TLS配置
-	Unix  *UnixProtocolConfig  `yaml:"unix" json:"unix"`   // Unix配置
 	UDP   *UDPProtocolConfig   `yaml:"udp" json:"udp"`     // UDP配置
 
 	// Web配置
@@ -175,6 +174,7 @@ func (this *ServerConfig) Init(ctx context.Context) (results []error) {
 
 				// pages
 				if len(groupWeb.Pages) > 0 || (groupWeb.Shutdown != nil && groupWeb.Shutdown.IsOn) {
+					this.Web.EnableGlobalPages = groupWeb.EnableGlobalPages
 					this.Web.Pages = groupWeb.Pages
 					this.Web.Shutdown = groupWeb.Shutdown
 				}
@@ -210,13 +210,6 @@ func (this *ServerConfig) Init(ctx context.Context) (results []error) {
 
 	if this.TLS != nil {
 		err := this.TLS.Init(ctx)
-		if err != nil {
-			results = append(results, err)
-		}
-	}
-
-	if this.Unix != nil {
-		err := this.Unix.Init()
 		if err != nil {
 			results = append(results, err)
 		}
@@ -296,9 +289,6 @@ func (this *ServerConfig) FullAddresses() []string {
 	if this.TLS != nil && this.TLS.IsOn {
 		result = append(result, this.TLS.FullAddresses()...)
 	}
-	if this.Unix != nil && this.Unix.IsOn {
-		result = append(result, this.Unix.FullAddresses()...)
-	}
 	if this.UDP != nil && this.UDP.IsOn {
 		result = append(result, this.UDP.FullAddresses()...)
 	}
@@ -320,9 +310,6 @@ func (this *ServerConfig) Listen() []*NetworkAddressConfig {
 	if this.TLS != nil {
 		result = append(result, this.TLS.Listen...)
 	}
-	if this.Unix != nil {
-		result = append(result, this.Unix.Listen...)
-	}
 	if this.UDP != nil {
 		result = append(result, this.UDP.Listen...)
 	}
@@ -339,10 +326,6 @@ func (this *ServerConfig) IsHTTPFamily() bool {
 
 func (this *ServerConfig) IsTCPFamily() bool {
 	return this.TCP != nil || this.TLS != nil
-}
-
-func (this *ServerConfig) IsUnixFamily() bool {
-	return this.Unix != nil
 }
 
 func (this *ServerConfig) IsUDPFamily() bool {

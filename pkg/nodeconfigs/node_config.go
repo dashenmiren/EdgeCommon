@@ -61,6 +61,7 @@ type NodeConfig struct {
 	// 性能
 	MaxCPU       int32                                 `yaml:"maxCPU" json:"maxCPU"`
 	APINodeAddrs []*serverconfigs.NetworkAddressConfig `yaml:"apiNodeAddrs" json:"apiNodeAddrs"`
+	BypassMobile int32                                 `yaml:"bypassMobile" json:"bypassMobile"` // 是否过移动
 
 	CacheDiskDir         string               `yaml:"cacheDiskDir" json:"cacheDiskDir"`                 // 文件缓存目录
 	MaxCacheDiskCapacity *shared.SizeCapacity `yaml:"maxCacheDiskCapacity" json:"maxCacheDiskCapacity"` // 文件缓存容量
@@ -91,6 +92,9 @@ type NodeConfig struct {
 	Clock                *ClockConfig                            `yaml:"clock" json:"clock"`                             // 时钟配置
 	AutoInstallNftables  bool                                    `yaml:"autoInstallNftables" json:"autoInstallNftables"` // 自动安装nftables
 	AutoSystemTuning     bool                                    `yaml:"autoSystemTuning" json:"autoSystemTuning"`       // 自动调整系统参数
+	AutoTrimDisks        bool                                    `yaml:"autoTrimDisks" json:"autoTrimDisks"`             // 自动执行TRIM
+	MaxConcurrentReads   int                                     `yaml:"maxConcurrentReads" json:"maxConcurrentReads"`   // 最大并发读
+	MaxConcurrentWrites  int                                     `yaml:"maxConcurrentWrites" json:"maxConcurrentWrites"` // 最大并发写
 
 	// 指标
 	MetricItems []*serverconfigs.MetricItemConfig `yaml:"metricItems" json:"metricItems"`
@@ -111,6 +115,9 @@ type NodeConfig struct {
 
 	// DNS
 	DNSResolver *DNSResolverConfig `yaml:"dnsResolver" json:"dnsResolver"`
+
+	// Cluster
+	ClusterSecret string `yaml:"clusterSecret" json:"clusterSecret"`
 
 	paddedId string
 
@@ -630,6 +637,15 @@ func (this *NodeConfig) lookupWeb(server *serverconfigs.ServerConfig, web *serve
 			}
 			if (web.FirewallPolicy.CaptchaOptions == nil || !web.FirewallPolicy.CaptchaOptions.IsPrior) && server.HTTPFirewallPolicy.CaptchaOptions != nil {
 				web.FirewallPolicy.CaptchaOptions = server.HTTPFirewallPolicy.CaptchaOptions
+			}
+			if (web.FirewallPolicy.Get302Options == nil || !web.FirewallPolicy.Get302Options.IsPrior) && server.HTTPFirewallPolicy.Get302Options != nil {
+				web.FirewallPolicy.Get302Options = server.HTTPFirewallPolicy.Get302Options
+			}
+			if (web.FirewallPolicy.Post307Options == nil || !web.FirewallPolicy.Post307Options.IsPrior) && server.HTTPFirewallPolicy.Post307Options != nil {
+				web.FirewallPolicy.Post307Options = server.HTTPFirewallPolicy.Post307Options
+			}
+			if (web.FirewallPolicy.JSCookieOptions == nil || !web.FirewallPolicy.JSCookieOptions.IsPrior) && server.HTTPFirewallPolicy.JSCookieOptions != nil {
+				web.FirewallPolicy.JSCookieOptions = server.HTTPFirewallPolicy.JSCookieOptions
 			}
 			if (web.FirewallPolicy.SYNFlood == nil || !web.FirewallPolicy.SYNFlood.IsPrior) && server.HTTPFirewallPolicy.SYNFlood != nil {
 				web.FirewallPolicy.SYNFlood = server.HTTPFirewallPolicy.SYNFlood

@@ -1,3 +1,5 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary
 
 import (
@@ -213,7 +215,12 @@ func (this *Updater) Loop() error {
 func (this *Updater) loadFile(fp *os.File) error {
 	this.source.LogInfo("load ip library from '" + fp.Name() + "' ...")
 
-	fileReader, err := NewFileDataReader(fp, "")
+	var version = ReaderVersionV1
+	if strings.HasSuffix(fp.Name(), ".v2.db") {
+		version = ReaderVersionV2
+	}
+
+	fileReader, err := NewFileDataReader(fp, "", version)
 	if err != nil {
 		return fmt.Errorf("load ip library from reader failed: %w", err)
 	}

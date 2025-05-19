@@ -1,9 +1,10 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package nodeutils
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/maps"
+	"testing"
 )
 
 func TestBase64EncodeMap(t *testing.T) {

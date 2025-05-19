@@ -1,3 +1,5 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 // ServerGroupConfig 服务分组配置

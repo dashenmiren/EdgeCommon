@@ -1,3 +1,5 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package firewallconfigs
 
 // SYNFloodConfig Syn flood防护设置
@@ -9,7 +11,7 @@ type SYNFloodConfig struct {
 	IgnoreLocal    bool  `yaml:"ignoreLocal" json:"ignoreLocal"`       // 忽略本地IP
 }
 
-func DefaultSYNFloodConfig() *SYNFloodConfig {
+func NewSYNFloodConfig() *SYNFloodConfig {
 	return &SYNFloodConfig{
 		IsOn:           false,
 		MinAttempts:    10,

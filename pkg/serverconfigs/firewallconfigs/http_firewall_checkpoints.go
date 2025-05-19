@@ -1,8 +1,9 @@
 package firewallconfigs
 
 import (
-	"github.com/iwind/TeaGo/maps"
 	"regexp"
+
+	"github.com/iwind/TeaGo/maps"
 )
 
 // AllCheckpoints all check points list
@@ -247,6 +248,14 @@ var AllCheckpoints = []*HTTPFirewallCheckpointDefinition{
 		Description: "单个报头值。",
 		IsRequest:   true,
 		HasParams:   true,
+		Priority:    100,
+	},
+	{
+		Name:        "请求报头最大长度",
+		Prefix:      "headerMaxLength",
+		Description: "最长的请求报头的长度。",
+		IsRequest:   true,
+		HasParams:   false,
 		Priority:    100,
 	},
 	{

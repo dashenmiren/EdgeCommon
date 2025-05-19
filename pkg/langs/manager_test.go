@@ -1,3 +1,5 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package langs_test
 
 import (
@@ -29,7 +31,7 @@ func TestManager_MatchLang(t *testing.T) {
 	manager.AddLang("en")
 	manager.AddLang("zh-cn")
 	manager.AddLang("zh-hk")
-	//manager.AddLang("zh-tw")
+	// manager.AddLang("zh-tw")
 
 	for _, code := range []string{
 		"en",

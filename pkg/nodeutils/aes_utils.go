@@ -1,3 +1,5 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package nodeutils
 
 import (
@@ -5,9 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
-
 	"github.com/iwind/TeaGo/maps"
+	"time"
 )
 
 // EncryptMap 加密

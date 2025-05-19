@@ -1,10 +1,11 @@
 package serverconfigs
 
 import (
-	"github.com/iwind/TeaGo/assert"
-	"github.com/iwind/TeaGo/types"
 	"testing"
 	"time"
+
+	"github.com/iwind/TeaGo/assert"
+	"github.com/iwind/TeaGo/types"
 )
 
 func TestServerAddressGroup_Protocol(t *testing.T) {
@@ -26,12 +27,6 @@ func TestServerAddressGroup_Protocol(t *testing.T) {
 		group := NewServerAddressGroup("127.0.0.1:1234")
 		a.IsTrue(group.Protocol() == ProtocolHTTP)
 		a.IsTrue(group.Addr() == "127.0.0.1:1234")
-	}
-
-	{
-		group := NewServerAddressGroup("unix:/tmp/my.sock")
-		a.IsTrue(group.Protocol() == ProtocolUnix)
-		a.IsTrue(group.Addr() == "/tmp/my.sock")
 	}
 }
 

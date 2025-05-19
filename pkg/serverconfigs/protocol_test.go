@@ -1,8 +1,9 @@
 package serverconfigs
 
 import (
-	"github.com/iwind/TeaGo/assert"
 	"testing"
+
+	"github.com/iwind/TeaGo/assert"
 )
 
 func TestProtocol_IsHTTPFamily(t *testing.T) {
@@ -17,6 +18,5 @@ func TestProtocol_IsHTTPFamily(t *testing.T) {
 	a.IsTrue(ProtocolTCP.IsTCPFamily())
 	a.IsTrue(ProtocolTCP.IsTCPFamily())
 	a.IsTrue(ProtocolTCP6.IsTCPFamily())
-	a.IsTrue(ProtocolUnix.IsUnixFamily())
 	a.IsTrue(ProtocolUDP.IsUDPFamily())
 }

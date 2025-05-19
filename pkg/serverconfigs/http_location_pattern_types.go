@@ -34,7 +34,7 @@ func AllLocationPatternTypes() []maps.Map {
 		{
 			"name":        "正则表达式匹配",
 			"type":        HTTPLocationPatternTypeRegexp,
-			"description": "通过正则表达式来匹配路径，正则表达式语法 ",
+			"description": "通过正则表达式来匹配路径，<a href=\"https://cdn.foyeseo.com/docs/Appendix/Regexp/Index.md\" target=\"_blank\">正则表达式语法 &raquo;</a>",
 		},
 	}
 }

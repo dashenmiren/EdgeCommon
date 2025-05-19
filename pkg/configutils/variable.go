@@ -5,11 +5,13 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	stringutil "github.com/iwind/TeaGo/utils/string"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
+
+	stringutil "github.com/iwind/TeaGo/utils/string"
 )
 
 // VariableHolder 变量信息存储类型
@@ -183,6 +185,9 @@ func doStringModifiers(value string, modifiers []string) string {
 			value = strings.ToLower(value)
 		case "toUpperCase":
 			value = strings.ToUpper(value)
+		case "quote":
+			value = strconv.Quote(value)
+
 		}
 	}
 	return value

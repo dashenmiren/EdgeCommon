@@ -1,3 +1,5 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
@@ -98,7 +100,7 @@ func TestHTTPCompressionConfig_Init(t *testing.T) {
 func TestHTTPCompressionConfig_MatchAcceptEncoding(t *testing.T) {
 	var config = &HTTPCompressionConfig{
 		GzipRef: &HTTPCompressionRef{
-			//IsOn: true,
+			// IsOn: true,
 		},
 		Gzip: &HTTPGzipCompressionConfig{
 			IsOn: true,
@@ -123,7 +125,7 @@ func TestHTTPCompressionConfig_MatchAcceptEncoding(t *testing.T) {
 
 func TestHTTPCompressionConfig_MatchAcceptEncoding2(t *testing.T) {
 	var config = &HTTPCompressionConfig{
-		//UseDefaultTypes: true,
+		// UseDefaultTypes: true,
 		Types: []HTTPCompressionType{"brotli"},
 	}
 	err := config.Init()

@@ -1,25 +1,14 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package configutils_test
 
 import (
-	"fmt"
 	"net"
 	"testing"
 
 	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/iwind/TeaGo/assert"
 )
-
-func TestParseCIDR(t *testing.T) {
-	t.Log(configutils.ParseCIDR("192.168.1.1/32"))
-	t.Log(configutils.ParseCIDR("192.168.1.1/24"))
-	t.Log(configutils.ParseCIDR("192.168.1.1/16"))
-}
-
-func TestIPString2Long(t *testing.T) {
-	for _, ip := range []string{"127.0.0.1", "192.168.1.100", "::1", "fd00:6868:6868:0:10ac:d056:3bf6:7452", "fd00:6868:6868:0:10ac:d056:3bf6:7453", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "wrong ip"} {
-		t.Log(fmt.Sprintf("%42s", ip), "=>", configutils.IPString2Long(ip))
-	}
-}
 
 func TestIsIPv4(t *testing.T) {
 	t.Log(configutils.IsIPv4(net.ParseIP("192.168.1.100")))

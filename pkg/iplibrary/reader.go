@@ -1,10 +1,14 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary
 
 import (
 	"bytes"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"io"
+	"math/big"
 	"net"
 	"runtime"
 	"sort"
@@ -20,8 +24,8 @@ type Reader struct {
 
 	regionMap map[string]*ipRegion // 缓存重复的区域用来节约内存
 
-	ipV4Items []ipv4Item
-	ipV6Items []ipv6Item
+	ipV4Items []ipv4ItemV1
+	ipV6Items []ipv6ItemV1
 
 	lastIPFrom     uint64
 	lastCountryId  uint16
@@ -31,16 +35,16 @@ type Reader struct {
 	lastProviderId uint16
 }
 
-// NewReader 创建新Reader对象
-func NewReader(reader io.Reader) (*Reader, error) {
+// NewReaderV1 创建新Reader对象
+func NewReaderV1(reader io.Reader) (*Reader, error) {
 	var libReader = &Reader{
 		regionMap: map[string]*ipRegion{},
 	}
 
 	if runtime.NumCPU() >= 4 /** CPU数量较多的通常有着大内存 **/ {
-		libReader.ipV4Items = make([]ipv4Item, 0, 6_000_000)
+		libReader.ipV4Items = make([]ipv4ItemV1, 0, 6_000_000)
 	} else {
-		libReader.ipV4Items = make([]ipv4Item, 0, 600_000)
+		libReader.ipV4Items = make([]ipv4ItemV1, 0, 600_000)
 	}
 
 	err := libReader.load(reader)
@@ -130,7 +134,7 @@ func (this *Reader) Lookup(ip net.IP) *QueryResult {
 		return &QueryResult{}
 	}
 
-	var ipLong = configutils.IP2Long(ip)
+	var ipLong = this.ip2long(ip)
 	var isV4 = configutils.IsIPv4(ip)
 	var resultItem any
 	if isV4 {
@@ -169,11 +173,11 @@ func (this *Reader) Meta() *Meta {
 	return this.meta
 }
 
-func (this *Reader) IPv4Items() []ipv4Item {
+func (this *Reader) IPv4Items() []ipv4ItemV1 {
 	return this.ipV4Items
 }
 
-func (this *Reader) IPv6Items() []ipv6Item {
+func (this *Reader) IPv6Items() []ipv6ItemV1 {
 	return this.ipV6Items
 }
 
@@ -303,13 +307,13 @@ func (this *Reader) parseLine(line []byte) error {
 	}
 
 	if version == "4" {
-		this.ipV4Items = append(this.ipV4Items, ipv4Item{
+		this.ipV4Items = append(this.ipV4Items, ipv4ItemV1{
 			IPFrom: uint32(ipFrom),
 			IPTo:   uint32(ipTo),
 			Region: region,
 		})
 	} else {
-		this.ipV6Items = append(this.ipV6Items, ipv6Item{
+		this.ipV6Items = append(this.ipV6Items, ipv6ItemV1{
 			IPFrom: ipFrom,
 			IPTo:   ipTo,
 			Region: region,
@@ -326,4 +330,19 @@ func (this *Reader) decodeUint64(s string) uint64 {
 	}
 	i, _ := strconv.ParseUint(s, 10, 64)
 	return i
+}
+
+func (this *Reader) ip2long(netIP net.IP) uint64 {
+	if len(netIP) == 0 {
+		return 0
+	}
+
+	var b4 = netIP.To4()
+	if b4 != nil {
+		return uint64(binary.BigEndian.Uint32(b4.To4()))
+	}
+
+	var i = big.NewInt(0)
+	i.SetBytes(netIP.To16())
+	return i.Uint64()
 }

@@ -1,3 +1,5 @@
+// Copyright 2022 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package iplibrary
 
 import (
@@ -7,11 +9,13 @@ import (
 	"io"
 	"net"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type FileReader struct {
-	rawReader *Reader
-	//password  string
+	rawReader ReaderInterface
+	// password  string
 }
 
 func NewFileReader(path string, password string) (*FileReader, error) {
@@ -23,10 +27,15 @@ func NewFileReader(path string, password string) (*FileReader, error) {
 		_ = fp.Close()
 	}()
 
-	return NewFileDataReader(fp, password)
+	var version = ReaderVersionV1
+	if strings.HasSuffix(filepath.Base(path), ".v2.db") {
+		version = ReaderVersionV2
+	}
+
+	return NewFileDataReader(fp, password, version)
 }
 
-func NewFileDataReader(dataReader io.Reader, password string) (*FileReader, error) {
+func NewFileDataReader(dataReader io.Reader, password string, readerVersion ReaderVersion) (*FileReader, error) {
 	if len(password) > 0 {
 		data, err := io.ReadAll(dataReader)
 		if err != nil {
@@ -46,7 +55,12 @@ func NewFileDataReader(dataReader io.Reader, password string) (*FileReader, erro
 		return nil, fmt.Errorf("create gzip reader failed: %w", err)
 	}
 
-	reader, err := NewReader(gzReader)
+	var reader ReaderInterface
+	if readerVersion == ReaderVersionV2 {
+		reader, err = NewReaderV2(gzReader)
+	} else {
+		reader, err = NewReaderV1(gzReader)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +71,13 @@ func NewFileDataReader(dataReader io.Reader, password string) (*FileReader, erro
 }
 
 func (this *FileReader) Meta() *Meta {
-	return this.rawReader.meta
+	return this.rawReader.Meta()
 }
 
 func (this *FileReader) Lookup(ip net.IP) *QueryResult {
 	return this.rawReader.Lookup(ip)
 }
 
-func (this *FileReader) RawReader() *Reader {
+func (this *FileReader) RawReader() ReaderInterface {
 	return this.rawReader
 }

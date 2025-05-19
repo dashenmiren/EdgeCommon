@@ -1,3 +1,5 @@
+// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+
 package serverconfigs
 
 import (
@@ -43,7 +45,7 @@ func TestReverseProxyConfig_Init(t *testing.T) {
 		}
 	}
 
-	//config.ResetScheduling()
+	// config.ResetScheduling()
 
 	nextOrigin := config.NextOrigin(&shared.RequestCall{
 		Formatter:         nil,

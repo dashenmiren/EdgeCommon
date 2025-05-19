@@ -1,3 +1,5 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package firewallconfigs_test
 
 import (
@@ -96,7 +98,7 @@ func TestHTTPFirewallRegionConfig_IsAllowed(t *testing.T) {
 			regionconfigs.RegionChinaIdHK,
 			regionconfigs.RegionChinaIdMO,
 			regionconfigs.RegionChinaIdTW,
-			//regionconfigs.RegionChinaIdMainland,
+			// regionconfigs.RegionChinaIdMainland,
 		}
 		config.DenyCountryIds = []int64{}
 		err := config.Init()

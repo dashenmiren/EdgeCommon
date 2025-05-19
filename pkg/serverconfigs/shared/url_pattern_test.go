@@ -1,3 +1,5 @@
+// Copyright 2023 GoEdge CDN goedge.cdn@gmail.com. All rights reserved. Official site: https://cdn.foyeseo.com .
+
 package shared_test
 
 import (
@@ -76,6 +78,18 @@ func TestURLPattern_Match(t *testing.T) {
 			result:      false, // because don't have https://HOST in url
 		},
 		{
+			patternType: "wildcard",
+			pattern:     "*.jpg",
+			url:         "https://example.com/index.jpg",
+			result:      true,
+		},
+		{
+			patternType: "wildcard",
+			pattern:     "*.jpg",
+			url:         "https://example.com/index.js",
+			result:      false,
+		},
+		{
 			patternType: "regexp",
 			pattern:     ".*",
 			url:         "https://example.com",
@@ -103,6 +117,46 @@ func TestURLPattern_Match(t *testing.T) {
 			patternType: "regexp",
 			pattern:     "(?i)https://.*EXAMPLE.COM/\\d+$",
 			url:         "https://example.com/123456/789",
+			result:      false,
+		},
+		{
+			patternType: "images",
+			url:         "https://example.com/images/logo.png",
+			result:      true,
+		},
+		{
+			patternType: "images",
+			url:         "https://example.com/images/logo.webp",
+			result:      true,
+		},
+		{
+			patternType: "images",
+			url:         "https://example.com/images/logo.mp3",
+			result:      false,
+		},
+		{
+			patternType: "audios",
+			url:         "https://example.com/audios/music.mp3",
+			result:      true,
+		},
+		{
+			patternType: "audios",
+			url:         "https://example.com/audios/music.mm",
+			result:      false,
+		},
+		{
+			patternType: "videos",
+			url:         "https://example.com/images/movie.mp4",
+			result:      true,
+		},
+		{
+			patternType: "videos",
+			url:         "https://example.com/images/movie.ts",
+			result:      true,
+		},
+		{
+			patternType: "videos",
+			url:         "https://example.com/images/movie.mp5",
 			result:      false,
 		},
 	} {
