@@ -1,9 +1,8 @@
 package serverconfigs
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestHTTPRootConfig_HasVariables(t *testing.T) {

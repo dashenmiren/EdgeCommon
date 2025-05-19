@@ -10,7 +10,6 @@ import "models/rpc_messages.proto";
 import "models/model_dns_domain.proto";
 import "models/model_dns_provider.proto";
 
-// 边缘节点集群管理服务
 service NodeClusterService {
 	// 创建集群
 	rpc createNodeCluster (CreateNodeClusterRequest) returns (CreateNodeClusterResponse);
@@ -110,60 +109,6 @@ service NodeClusterService {
 
 	// 查找最近访问的集群
 	rpc findLatestNodeClusters (FindLatestNodeClustersRequest) returns (FindLatestNodeClustersResponse);
-
-	// 取得集群的配置概要信息
-	rpc findEnabledNodeClusterConfigInfo (FindEnabledNodeClusterConfigInfoRequest) returns (FindEnabledNodeClusterConfigInfoResponse);
-
-	// 设置集群是否置顶
-	rpc updateNodeClusterPinned(UpdateNodeClusterPinnedRequest) returns (RPCSuccess);
-
-	// 读取集群WebP策略
-	rpc findEnabledNodeClusterWebPPolicy(FindEnabledNodeClusterWebPPolicyRequest) returns (FindEnabledNodeClusterWebPPolicyResponse);
-
-	// 设置集群WebP策略
-	rpc updateNodeClusterWebPPolicy(UpdateNodeClusterWebPPolicyRequest) returns (RPCSuccess);
-
-	// 读取集群的UAM策略
-	rpc findEnabledNodeClusterUAMPolicy(FindEnabledNodeClusterUAMPolicyRequest) returns (FindEnabledNodeClusterUAMPolicyResponse);
-
-	// 设置集群的UAM策略
-	rpc updateNodeClusterUAMPolicy(UpdateNodeClusterUAMPolicyRequest) returns (RPCSuccess);
-
-	// 读取集群的HTTP CC策略
-	rpc findEnabledNodeClusterHTTPCCPolicy(FindEnabledNodeClusterHTTPCCPolicyRequest) returns (FindEnabledNodeClusterHTTPCCPolicyResponse);
-
-	// 设置集群的HTTP CC策略
-	rpc updateNodeClusterHTTPCCPolicy(UpdateNodeClusterHTTPCCPolicyRequest) returns (RPCSuccess);
-
-	// 获取集群的DDoS设置
-	rpc findNodeClusterDDoSProtection(FindNodeClusterDDoSProtectionRequest) returns (FindNodeClusterDDoSProtectionResponse);
-
-	// 修改集群的DDoS设置
-	rpc updateNodeClusterDDoSProtection(UpdateNodeClusterDDoSProtectionRequest) returns (RPCSuccess);
-
-	// 获取集群的全局服务设置
-	rpc findNodeClusterGlobalServerConfig(FindNodeClusterGlobalServerConfigRequest) returns (FindNodeClusterGlobalServerConfigResponse);
-
-	// 修改集群的全局服务设置
-	rpc updateNodeClusterGlobalServerConfig(UpdateNodeClusterGlobalServerConfigRequest) returns (RPCSuccess);
-
-	// 获取集群的自定义页面设置
-	rpc findNodeClusterHTTPPagesPolicy(FindNodeClusterHTTPPagesPolicyRequest) returns (FindNodeClusterHTTPPagesPolicyResponse);
-
-	// 修改集群的自定义页面设置
-	rpc updateNodeClusterHTTPPagesPolicy(UpdateNodeClusterHTTPPagesPolicyRequest) returns (RPCSuccess);
-
-	// 获取集群的HTTP3设置
-	rpc findNodeClusterHTTP3Policy(FindNodeClusterHTTP3PolicyRequest) returns (FindNodeClusterHTTP3PolicyResponse);
-
-	// 修改集群的HTTP3设置
-	rpc updateNodeClusterHTTP3Policy(UpdateNodeClusterHTTP3PolicyRequest) returns (RPCSuccess);
-
-	// 获取集群的网络安全策略
-	rpc findNodeClusterNetworkSecurityPolicy(FindNodeClusterNetworkSecurityPolicyRequest) returns (FindNodeClusterNetworkSecurityPolicyResponse);
-
-	// 修改集群的网络安全策略
-	rpc updateNodeClusterNetworkSecurityPolicy(UpdateNodeClusterNetworkSecurityPolicyRequest) returns (RPCSuccess);
 }
 
 // 获取所有集群的信息
@@ -182,16 +127,9 @@ message CreateNodeClusterRequest {
 	string installDir = 3;
 	int64 dnsDomainId = 4;
 	string dnsName = 5;
-	int32 dnsTTL = 9;
 	int64 httpCachePolicyId = 6;
 	int64 httpFirewallPolicyId = 7;
 	bytes systemServicesJSON = 8; // 系统服务设置
-	bytes globalServerConfigJSON = 10; // 服务全局设置
-	bool autoInstallNftables = 11; // 自动安装nftables
-	bool autoSystemTuning = 12; // 是否自动调节系统参数
-	bool autoTrimDisks = 13; // 是否自动TRIM硬盘
-	int32 maxConcurrentReads = 15; // 最大并发读
-	int32 maxConcurrentWrites = 16; // 最大并发写
 }
 
 message CreateNodeClusterResponse {
@@ -204,17 +142,8 @@ message UpdateNodeClusterRequest {
 	string name = 2;
 	int64 nodeGrantId = 3;
 	string installDir = 4;
-	string timeZone = 5;
-	int32 nodeMaxThreads = 6;
-	bool autoOpenPorts = 8;
-	bytes clockJSON = 9;
-	bool autoRemoteStart = 10;
-	bool autoInstallNftables = 11;
-	bytes sshParamsJSON = 12;
-	bool autoSystemTuning = 13; // 是否自动调节系统参数
-	bool autoTrimDisks = 14; // 是否自动TRIM硬盘
-	int32 maxConcurrentReads = 15; // 最大并发读
-	int32 maxConcurrentWrites = 16; // 最大并发写
+	int64 httpCachePolicyId = 5;
+	int64 httpFirewallPolicyId = 6;
 }
 
 // 删除集群
@@ -250,9 +179,7 @@ message CountAllEnabledNodeClustersRequest {
 message ListEnabledNodeClustersRequest {
 	int64 offset = 1;
 	int64 size = 2;
-	string keyword = 3; // 可选项，搜索关键词
-	bool idDesc = 4; // 可选项，是否按照ID倒序排列
-	bool idAsc = 5; // 可选项，是否按照ID正序排列
+	string keyword = 3;
 }
 
 message ListEnabledNodeClustersResponse {
@@ -314,13 +241,8 @@ message FindEnabledNodeClusterDNSResponse {
 	string name = 1;
 	DNSDomain domain = 2;
 	DNSProvider provider = 3;
-	string defaultRoute = 6;
 	bool nodesAutoSync = 4;
 	bool serversAutoSync = 5;
-	repeated string cnameRecords = 7;
-	int32 ttl = 8;
-	bool cnameAsDomain = 9;
-	bool includingLnNodes = 10;
 }
 
 // 计算使用某个DNS服务商的集群数量
@@ -359,10 +281,6 @@ message UpdateNodeClusterDNSRequest {
 	int64 dnsDomainId = 3;
 	bool nodesAutoSync = 4;
 	bool serversAutoSync = 5;
-	repeated string cnameRecords = 6;
-	int32 ttl = 7;
-	bool cnameAsDomain = 8;
-	bool includingLnNodes = 9;
 }
 
 // 检查集群的DNS是否有变化
@@ -449,7 +367,6 @@ message FindNodeClusterSystemServiceResponse {
 // 获取集群中可以使用的端口
 message FindFreePortInNodeClusterRequest {
 	int64 nodeClusterId = 1;
-	string protocolFamily = 2;
 }
 
 message FindFreePortInNodeClusterResponse {
@@ -462,7 +379,6 @@ message CheckPortIsUsingInNodeClusterRequest {
 	int64 nodeClusterId = 2;
 	int64 excludeServerId = 3;
 	string excludeProtocol = 4;
-	string protocolFamily = 5;
 }
 
 message CheckPortIsUsingInNodeClusterResponse {
@@ -476,152 +392,4 @@ message FindLatestNodeClustersRequest {
 
 message FindLatestNodeClustersResponse {
 	repeated NodeCluster nodeClusters = 1;
-}
-
-// 取得集群的配置概要信息
-message FindEnabledNodeClusterConfigInfoRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindEnabledNodeClusterConfigInfoResponse {
-	bool healthCheckIsOn = 1; // 启用了健康检查
-	bool hasFirewallActions = 2; // 有防火墙动作设置
-	bool hasThresholds = 3; // 有节点阈值设置
-	bool hasMessageReceivers = 4; // 已设置消息通知接收人
-	bool isTOAEnabled = 5; // 启用了TOA
-	bool hasMetricItems = 6; // 有指标统计设置
-	bool webPIsOn = 7; // 是否定义了WebP策略
-	bool uamIsOn = 10; // 是否定义了UAM策略
-	bool httpCCIsOn = 12; // 是否定义了CC策略
-	bool hasSystemServices = 8; // 启用了系统服务
-	bool hasDDoSProtection = 9; // 启用了DDoS防护
-	bool hasHTTPPagesPolicy = 11; // 是否设置了自定义页面策略
-	bool http3IsOn = 13; // 是否启用HTTP3
-	bool hasNetworkSecurityPolicy = 14; // 设置了网络安全策略
-}
-
-// 设置集群是否置顶
-message UpdateNodeClusterPinnedRequest {
-	int64 nodeClusterId = 1;
-	bool isPinned = 2;
-}
-
-// 读取集群WebP策略
-message FindEnabledNodeClusterWebPPolicyRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindEnabledNodeClusterWebPPolicyResponse {
-	bytes webpPolicyJSON = 1;
-}
-
-// 设置集群WebP策略
-message UpdateNodeClusterWebPPolicyRequest {
-	int64 nodeClusterId = 1;
-	bytes webPPolicyJSON = 2;
-}
-
-// 读取集群的UAM策略
-message FindEnabledNodeClusterUAMPolicyRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindEnabledNodeClusterUAMPolicyResponse {
-	bytes uamPolicyJSON = 1;
-}
-
-// 设置集群的UAM策略
-message UpdateNodeClusterUAMPolicyRequest {
-	int64 nodeClusterId = 1;
-	bytes uamPolicyJSON = 2;
-}
-
-// 读取集群的HTTP CC策略
-message FindEnabledNodeClusterHTTPCCPolicyRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindEnabledNodeClusterHTTPCCPolicyResponse {
-	bytes httpCCPolicyJSON = 1;
-}
-
-// 设置集群的HTTP CC策略
-message UpdateNodeClusterHTTPCCPolicyRequest {
-	int64 nodeClusterId = 1;
-	bytes httpCCPolicyJSON = 2;
-}
-
-// 获取集群的DDoS设置
-message FindNodeClusterDDoSProtectionRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindNodeClusterDDoSProtectionResponse {
-	bytes ddosProtectionJSON = 1;
-}
-
-// 修改集群的DDoS设置
-message UpdateNodeClusterDDoSProtectionRequest {
-	int64 nodeClusterId = 1;
-	bytes ddosProtectionJSON = 2;
-}
-
-// 获取集群的全局服务设置
-message FindNodeClusterGlobalServerConfigRequest {
-	int64 nodeClusterId = 1;
-}
-
-message FindNodeClusterGlobalServerConfigResponse {
-	bytes globalServerConfigJSON = 1;
-}
-
-// 修改集群的全局服务设置
-message UpdateNodeClusterGlobalServerConfigRequest {
-	int64 nodeClusterId = 1; // 集群ID
-	bytes globalServerConfigJSON = 2; // 网站全局配置
-}
-
-// 获取集群的自定义页面设置
-message FindNodeClusterHTTPPagesPolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-}
-
-message FindNodeClusterHTTPPagesPolicyResponse {
-	bytes httpPagesPolicyJSON = 1; // HTTP自定义页面策略配置
-}
-
-// 修改集群的自定义页面设置
-message UpdateNodeClusterHTTPPagesPolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-	bytes httpPagesPolicyJSON = 2; // HTTP自定义页面策略配置
-}
-
-// 获取集群的HTTP3设置
-message FindNodeClusterHTTP3PolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-}
-
-message FindNodeClusterHTTP3PolicyResponse {
-	bytes http3PolicyJSON = 1; // HTTP3策略配置
-}
-
-// 修改集群的HTTP3设置
-message UpdateNodeClusterHTTP3PolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-	bytes http3PolicyJSON = 2; // HTTP3策略配置
-}
-
-// 获取集群的网络安全策略
-message FindNodeClusterNetworkSecurityPolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-}
-
-message FindNodeClusterNetworkSecurityPolicyResponse {
-	bytes networkSecurityPolicyJSON = 1; // 网络安全策略配置
-}
-
-// 修改集群的网络安全策略
-message UpdateNodeClusterNetworkSecurityPolicyRequest {
-	int64 nodeClusterId = 1; // 集群ID
-	bytes networkSecurityPolicyJSON = 2; // 网络安全策略配置
 }

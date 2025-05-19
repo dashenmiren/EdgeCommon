@@ -1,9 +1,8 @@
 package serverconfigs
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestPageConfig_Match(t *testing.T) {

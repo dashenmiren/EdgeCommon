@@ -1,9 +1,6 @@
 package serverconfigs
 
-import (
-	"context"
-	"testing"
-)
+import "testing"
 
 func TestServerConfig_Protocols(t *testing.T) {
 	{
@@ -19,6 +16,16 @@ func TestServerConfig_Protocols(t *testing.T) {
 				{
 					Protocol:  ProtocolHTTP,
 					PortRange: "1234",
+				},
+			},
+		}}
+		server.HTTPS = &HTTPSProtocolConfig{BaseProtocol: BaseProtocol{
+			IsOn: true,
+			Listen: []*NetworkAddressConfig{
+				{
+					Protocol:  ProtocolUnix,
+					Host:      "/hello.sock",
+					PortRange: "1235",
 				},
 			},
 		}}
@@ -40,6 +47,15 @@ func TestServerConfig_Protocols(t *testing.T) {
 				},
 			},
 		}}
+		server.Unix = &UnixProtocolConfig{BaseProtocol: BaseProtocol{
+			IsOn: true,
+			Listen: []*NetworkAddressConfig{
+				{
+					Protocol:  ProtocolTLS,
+					PortRange: "1234",
+				},
+			},
+		}}
 		server.UDP = &UDPProtocolConfig{BaseProtocol: BaseProtocol{
 			IsOn: true,
 			Listen: []*NetworkAddressConfig{
@@ -49,29 +65,10 @@ func TestServerConfig_Protocols(t *testing.T) {
 				},
 			},
 		}}
-		err := server.Init(context.TODO())
+		err := server.Init()
 		if err != nil {
 			t.Fatal(err)
 		}
 		t.Log(server.FullAddresses())
 	}
-}
-
-func TestServerConfig_AllStrictNames(t *testing.T) {
-	var config = &ServerConfig{
-		AliasServerNames: []string{"hello.com", ".hello.com"},
-		ServerNames: []*ServerNameConfig{
-			{
-				Name: "hello2.com",
-			},
-			{
-				SubNames: []string{"hello3.com", "hello4.com", "*.hello5.com"},
-			},
-			{
-				Name: "~hello.com",
-			},
-		},
-	}
-	t.Log(config.AllStrictNames())
-	t.Log(config.AllFuzzyNames())
 }

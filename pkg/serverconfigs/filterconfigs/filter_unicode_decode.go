@@ -1,10 +1,9 @@
 package filterconfigs
 
 import (
+	"github.com/iwind/TeaGo/types"
 	"strconv"
 	"strings"
-
-	"github.com/iwind/TeaGo/types"
 )
 
 type UnicodeDecodeFilter struct {

@@ -1,6 +1,6 @@
 package dao
 
-import "github.com/dashenmiren/EdgeCommon/pkg/rpc/pb"
+import "github.com/TeaOSLab/EdgeCommon/pkg/rpc/pb"
 
 var sharedRPCClient RPCClient
 
@@ -12,6 +12,7 @@ type RPCClient interface {
 	SysSettingRPC() pb.SysSettingServiceClient
 	NodeClusterRPC() pb.NodeClusterServiceClient
 	NodeRegionRPC() pb.NodeRegionServiceClient
+	NodePriceItemRPC() pb.NodePriceItemServiceClient
 	ServerRPC() pb.ServerServiceClient
 	ServerGroupRPC() pb.ServerGroupServiceClient
 	OriginRPC() pb.OriginServiceClient
@@ -45,4 +46,6 @@ type RPCClient interface {
 	ACMEUserRPC() pb.ACMEUserServiceClient
 	ACMETaskRPC() pb.ACMETaskServiceClient
 	UserRPC() pb.UserServiceClient
+	UserBillRPC() pb.UserBillServiceClient
+	UserNodeRPC() pb.UserNodeServiceClient
 }

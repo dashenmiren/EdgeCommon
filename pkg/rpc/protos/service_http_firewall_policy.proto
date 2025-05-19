@@ -10,7 +10,6 @@ import "models/model_region_country.proto";
 import "models/model_region_province.proto";
 import "models/rpc_messages.proto";
 
-// HTTP防火墙（WAF）服务
 service HTTPFirewallPolicyService {
 	// 获取所有可用策略
 	rpc findAllEnabledHTTPFirewallPolicies (FindAllEnabledHTTPFirewallPoliciesRequest) returns (FindAllEnabledHTTPFirewallPoliciesResponse);
@@ -50,9 +49,6 @@ service HTTPFirewallPolicyService {
 
 	// 检查IP状态
 	rpc checkHTTPFirewallPolicyIPStatus (CheckHTTPFirewallPolicyIPStatusRequest) returns (CheckHTTPFirewallPolicyIPStatusResponse);
-
-	// 获取防火墙对应的网站ID
-	rpc findServerIdWithHTTPFirewallPolicyId(FindServerIdWithHTTPFirewallPolicyIdRequest) returns (FindServerIdWithHTTPFirewallPolicyIdResponse);
 }
 
 // 获取所有可用策略
@@ -71,7 +67,6 @@ message CreateHTTPFirewallPolicyRequest {
 	string description = 3;
 	repeated string httpFirewallGroupCodes = 4;
 	int64 serverId = 5;
-	int64 serverGroupId = 6;
 }
 
 message CreateHTTPFirewallPolicyResponse {
@@ -84,7 +79,6 @@ message CreateEmptyHTTPFirewallPolicyRequest {
 	string name = 2;
 	string description = 3;
 	int64 serverId = 4;
-	int64 serverGroupId = 5;
 }
 
 message CreateEmptyHTTPFirewallPolicyResponse {
@@ -98,17 +92,7 @@ message UpdateHTTPFirewallPolicyRequest {
 	string name = 3;
 	string description = 4;
 	repeated string firewallGroupCodes = 5;
-	bytes blockOptionsJSON = 6; // 阻止动作配置
-	bytes pageOptionsJSON = 15; // 显示网页动作配置
-	bytes captchaOptionsJSON = 11; // 验证码动作配置
-	bytes jsCookieOptionsJSON = 16; // JSCookie动作配置
-	string mode = 7;
-	bool useLocalFirewall = 8; // 是否使用本地防火墙
-	bytes synFloodJSON = 9; // SYN Flood相关配置
-	bytes LogJSON = 10; // 日志相关配置
-	int64 maxRequestBodySize = 12; // 最大文件尺寸，单位为字节
-	string denyCountryHTML = 13; // 区域封禁提示
-	string denyProvinceHTML = 14; // 省份封禁提示
+	bytes blockOptionsJSON = 6;
 }
 
 // 修改分组信息
@@ -127,7 +111,6 @@ message UpdateHTTPFirewallInboundConfigRequest {
 // 计算可用的防火墙策略数量
 message CountAllEnabledHTTPFirewallPoliciesRequest {
 	string keyword = 1;
-	int64 nodeClusterId = 2;
 }
 
 // 列出单页的防火墙策略
@@ -135,7 +118,6 @@ message ListEnabledHTTPFirewallPoliciesRequest {
 	int64 offset = 1;
 	int64 size = 2;
 	string keyword = 3;
-	int64 nodeClusterId = 4;
 }
 
 message ListEnabledHTTPFirewallPoliciesResponse {
@@ -179,20 +161,11 @@ message CheckHTTPFirewallPolicyIPStatusRequest {
 
 message CheckHTTPFirewallPolicyIPStatusResponse {
 	bool isOk = 1; // 是否查询成功
-	string error = 2; // 错误信息
+	string error = 2;
 	bool isFound = 3; // 是否找到
-	bool isAllowed = 4; // 是否允许访问
+	bool isAllowed = 4; // 是否允许
 	IPList ipList = 5; // 匹配的IPList
 	IPItem ipItem = 6; // 匹配的IPItem
 	RegionCountry regionCountry = 7; // 匹配到封禁的地区
 	RegionProvince regionProvince = 8; // 匹配到封禁的省份
-}
-
-// 获取防火墙对应的网站ID
-message FindServerIdWithHTTPFirewallPolicyIdRequest {
-	int64 httpFirewallPolicyId = 1; // 防火墙策略ID
-}
-
-message FindServerIdWithHTTPFirewallPolicyIdResponse {
-	int64 serverId = 1; // 防火墙策略对应的网站ID，公共的防火墙策略的网站ID为0
 }

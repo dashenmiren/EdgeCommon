@@ -1,30 +1,20 @@
-// Copyright 2021 GoEdge CDN goedge.cdn@gmail.com. All rights reserved.
+// Copyright 2021 Liuxiangchao iwind.liu@gmail.com. All rights reserved.
 
 package nodeconfigs
 
-import (
-	"encoding/json"
-)
+import "encoding/json"
 
 // NodeValueItem 监控项
 type NodeValueItem = string
 
 const (
-	NodeValueItemCPU    NodeValueItem = "cpu"    // CPU
-	NodeValueItemMemory NodeValueItem = "memory" // 内存
-	NodeValueItemLoad   NodeValueItem = "load"   // 负载
-
-	NodeValueItemTrafficIn  NodeValueItem = "trafficIn"  // 业务上行流量
-	NodeValueItemTrafficOut NodeValueItem = "trafficOut" // 业务下行流量
-	NodeValueItemAllTraffic NodeValueItem = "allTraffic" // 所有流量
-
-	NodeValueItemConnections    NodeValueItem = "connections"    // 连接数
-	NodeValueItemRequests       NodeValueItem = "requests"       // 请求访问量
-	NodeValueItemAttackRequests NodeValueItem = "attackRequests" // 攻击请求访问量
-	NodeValueItemDisk           NodeValueItem = "disk"           // 磁盘
-	NodeValueItemCacheDir       NodeValueItem = "cacheDir"       // 缓存目录
-
-	NodeValueItemNetworkPackets NodeValueItem = "networkPackets" // 网络数据包统计
+	NodeValueItemCPU         NodeValueItem = "cpu"         // CPU
+	NodeValueItemMemory      NodeValueItem = "memory"      // 内存
+	NodeValueItemLoad        NodeValueItem = "load"        // 负载
+	NodeValueItemTrafficIn   NodeValueItem = "trafficIn"   // 上行流量
+	NodeValueItemTrafficOut  NodeValueItem = "trafficOut"  // 下行流量
+	NodeValueItemConnections NodeValueItem = "connections" // 连接数
+	NodeValueItemDisk        NodeValueItem = "disk"        // 磁盘
 )
 
 type nodeValueItemDefinition struct {
@@ -38,7 +28,6 @@ type nodeValueItemParamDefinition struct {
 	Code        string `json:"code"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	IsPercent   bool   `json:"isPercent"` // 是否支持百分比
 }
 
 var nodeValueItemDefinitions = []*nodeValueItemDefinition{
@@ -49,8 +38,7 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 			{
 				Code:        "usage",
 				Name:        "使用比例",
-				Description: "0到100之间的数字",
-				IsPercent:   true,
+				Description: "一个不超过1的小数",
 			},
 		},
 	},
@@ -61,8 +49,7 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 			{
 				Code:        "usage",
 				Name:        "使用比例",
-				Description: "0到100之间的数字",
-				IsPercent:   true,
+				Description: "一个不超过1的小数",
 			},
 		},
 	},
@@ -73,24 +60,24 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 			{
 				Code:        "load1m",
 				Name:        "1分钟负载",
-				Description: "1分钟内的平均负载",
+				Description: "1分钟内的负载",
 			},
 			{
 				Code:        "load5m",
 				Name:        "5分钟负载",
-				Description: "5分钟内的平均负载",
+				Description: "5分钟内的负载",
 			},
 			{
 				Code:        "load15m",
 				Name:        "15分钟负载",
-				Description: "15分钟内的平均负载",
+				Description: "15分钟内的负载",
 			},
 		},
 	},
 	{
 		Code:        NodeValueItemTrafficIn,
 		Name:        "上行流量",
-		Description: "平均每分钟客户端发送到服务器端的流量。",
+		Description: "客户端发送到服务器端的流量。",
 		Params: []*nodeValueItemParamDefinition{
 			{
 				Code:        "total",
@@ -102,7 +89,7 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 	{
 		Code:        NodeValueItemTrafficOut,
 		Name:        "下行流量",
-		Description: "平均每分钟服务器端发送到客户端的流量。",
+		Description: "服务器端发送到客户端的流量。",
 		Params: []*nodeValueItemParamDefinition{
 			{
 				Code:        "total",
@@ -112,38 +99,13 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 		},
 	},
 	{
-		Code:        NodeValueItemConnections,
-		Name:        "连接数",
-		Description: "平均每分钟连接数",
+		Code: NodeValueItemConnections,
+		Name: "连接数",
 		Params: []*nodeValueItemParamDefinition{
 			{
 				Code:        "total",
 				Name:        "总数",
 				Description: "连接总数",
-			},
-		},
-	},
-	{
-		Code:        NodeValueItemRequests,
-		Name:        "请求数",
-		Description: "平均每分钟请求数",
-		Params: []*nodeValueItemParamDefinition{
-			{
-				Code:        "total",
-				Name:        "总数",
-				Description: "请求总数",
-			},
-		},
-	},
-	{
-		Code:        NodeValueItemAttackRequests,
-		Name:        "攻击请求数",
-		Description: "平均每分钟攻击请求数",
-		Params: []*nodeValueItemParamDefinition{
-			{
-				Code:        "total",
-				Name:        "总数",
-				Description: "攻击请求总数",
 			},
 		},
 	},
@@ -154,26 +116,7 @@ var nodeValueItemDefinitions = []*nodeValueItemDefinition{
 			{
 				Code:        "usage",
 				Name:        "使用比例",
-				Description: "0到100之间的数字",
-				IsPercent:   true,
-			},
-		},
-	},
-	{
-		Code: NodeValueItemNetworkPackets,
-		Name: "网络数据包",
-		Params: []*nodeValueItemParamDefinition{
-			{
-				Code: "tcpInPPS",
-				Name: "TCP入口包速率（pps）",
-			},
-			{
-				Code: "udpInPPS",
-				Name: "UDP入口包速率（pps）",
-			},
-			{
-				Code: "icmpInPPS",
-				Name: "ICMP入口包速率（pps）",
+				Description: "一个不超过1的小数",
 			},
 		},
 	},
@@ -207,21 +150,6 @@ func FindNodeValueItemParamName(nodeCode NodeValueItem, paramCode string) string
 		}
 	}
 	return ""
-}
-
-// CheckNodeValueItemParamIsPercent 判断监控项某个参数是否支持百分比
-func CheckNodeValueItemParamIsPercent(nodeCode NodeValueItem, paramCode string) bool {
-	for _, def := range nodeValueItemDefinitions {
-		if def.Code == nodeCode {
-			for _, p := range def.Params {
-				if p.Code == paramCode {
-					return p.IsPercent
-				}
-			}
-			return false
-		}
-	}
-	return false
 }
 
 // NodeValueRange 值范围

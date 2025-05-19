@@ -18,26 +18,20 @@ service DNSDomainService {
 	// 删除域名
 	rpc deleteDNSDomain (DeleteDNSDomainRequest) returns (RPCSuccess);
 
-	// 恢复删除的域名
-	rpc recoverDNSDomain (RecoverDNSDomainRequest) returns (RPCSuccess);
-
 	// 查询单个域名完整信息
-	rpc findDNSDomain (FindDNSDomainRequest) returns (FindDNSDomainResponse);
+	rpc findEnabledDNSDomain (FindEnabledDNSDomainRequest) returns (FindEnabledDNSDomainResponse);
 
 	// 查询单个域名基础信息
-	rpc findBasicDNSDomain (FindBasicDNSDomainRequest) returns (FindBasicDNSDomainResponse);
+	rpc findEnabledBasicDNSDomain (FindEnabledBasicDNSDomainRequest) returns (FindEnabledBasicDNSDomainResponse);
 
 	// 计算服务商下的域名数量
-	rpc countAllDNSDomainsWithDNSProviderId (CountAllDNSDomainsWithDNSProviderIdRequest) returns (RPCCountResponse);
+	rpc countAllEnabledDNSDomainsWithDNSProviderId (CountAllEnabledDNSDomainsWithDNSProviderIdRequest) returns (RPCCountResponse);
 
 	// 列出服务商下的所有域名
-	rpc findAllDNSDomainsWithDNSProviderId (FindAllDNSDomainsWithDNSProviderIdRequest) returns (FindAllDNSDomainsWithDNSProviderIdResponse);
+	rpc findAllEnabledDNSDomainsWithDNSProviderId (FindAllEnabledDNSDomainsWithDNSProviderIdRequest) returns (FindAllEnabledDNSDomainsWithDNSProviderIdResponse);
 
 	// 列出服务商下的所有域名基本信息
-	rpc findAllBasicDNSDomainsWithDNSProviderId (FindAllBasicDNSDomainsWithDNSProviderIdRequest) returns (FindAllBasicDNSDomainsWithDNSProviderIdResponse);
-
-	// 列出服务商下的单页域名信息
-	rpc listBasicDNSDomainsWithDNSProviderId (ListBasicDNSDomainsWithDNSProviderIdRequest) returns (ListDNSDomainsWithDNSProviderIdResponse);
+	rpc findAllEnabledBasicDNSDomainsWithDNSProviderId (FindAllEnabledBasicDNSDomainsWithDNSProviderIdRequest) returns (FindAllEnabledBasicDNSDomainsWithDNSProviderIdResponse);
 
 	// 同步域名解析
 	rpc syncDNSDomainData (SyncDNSDomainDataRequest) returns (SyncDNSDomainDataResponse);
@@ -50,9 +44,6 @@ service DNSDomainService {
 
 	// 检查域名是否在记录中
 	rpc existDNSDomainRecord (ExistDNSDomainRecordRequest) returns (ExistDNSDomainRecordResponse);
-
-	// 从服务商同步域名
-	rpc syncDNSDomainsFromProvider(SyncDNSDomainsFromProviderRequest) returns (SyncDNSDomainsFromProviderResponse);
 }
 
 // 创建域名
@@ -77,64 +68,44 @@ message DeleteDNSDomainRequest {
 	int64 dnsDomainId = 1;
 }
 
-// 恢复删除的域名
-message RecoverDNSDomainRequest {
-	int64 dnsDomainId = 1;
-}
-
 // 查询单个域名信息
-message FindDNSDomainRequest {
+message FindEnabledDNSDomainRequest {
 	int64 dnsDomainId = 1;
 }
 
-message FindDNSDomainResponse {
+message FindEnabledDNSDomainResponse {
 	DNSDomain dnsDomain = 1;
 }
 
 // 查询单个域名的基础信息
-message FindBasicDNSDomainRequest {
+message FindEnabledBasicDNSDomainRequest {
 	int64 dnsDomainId = 1;
 }
 
-message FindBasicDNSDomainResponse {
+message FindEnabledBasicDNSDomainResponse {
 	DNSDomain dnsDomain = 1;
 }
 
 // 计算服务商下的域名数量
-message CountAllDNSDomainsWithDNSProviderIdRequest {
+message CountAllEnabledDNSDomainsWithDNSProviderIdRequest {
 	int64 dnsProviderId = 1;
-	bool isDeleted = 2;
-	bool isDown = 3;
 }
 
 // 列出服务商下的所有域名
-message FindAllDNSDomainsWithDNSProviderIdRequest {
+message FindAllEnabledDNSDomainsWithDNSProviderIdRequest {
 	int64 dnsProviderId = 1;
 }
 
-message FindAllDNSDomainsWithDNSProviderIdResponse {
+message FindAllEnabledDNSDomainsWithDNSProviderIdResponse {
 	repeated DNSDomain dnsDomains = 1;
 }
 
 // 列出服务商下的所有域名基本信息
-message FindAllBasicDNSDomainsWithDNSProviderIdRequest {
+message FindAllEnabledBasicDNSDomainsWithDNSProviderIdRequest {
 	int64 dnsProviderId = 1;
 }
 
-message FindAllBasicDNSDomainsWithDNSProviderIdResponse {
-	repeated DNSDomain dnsDomains = 1;
-}
-
-// 列出服务商下的单页域名信息
-message ListBasicDNSDomainsWithDNSProviderIdRequest {
-	int64 dnsProviderId = 1;
-	bool isDeleted = 2;
-	bool isDown = 3;
-	int64 offset = 4;
-	int64 size = 5;
-}
-
-message ListDNSDomainsWithDNSProviderIdResponse {
+message FindAllEnabledBasicDNSDomainsWithDNSProviderIdResponse {
 	repeated DNSDomain dnsDomains = 1;
 }
 
@@ -142,7 +113,6 @@ message ListDNSDomainsWithDNSProviderIdResponse {
 message SyncDNSDomainDataRequest {
 	int64 dnsDomainId = 1;
 	int64 nodeClusterId = 2; // 如果指定，表示只更新单个集群ID
-	bool checkNodeIssues = 3; // 是否检查节点问题
 }
 
 message SyncDNSDomainDataResponse {
@@ -180,13 +150,4 @@ message ExistDNSDomainRecordRequest {
 
 message ExistDNSDomainRecordResponse {
 	bool isOk = 1;
-}
-
-// 从服务商同步域名
-message SyncDNSDomainsFromProviderRequest {
-	int64 dnsProviderId = 1;
-}
-
-message SyncDNSDomainsFromProviderResponse {
-	bool hasChanges = 1;
 }

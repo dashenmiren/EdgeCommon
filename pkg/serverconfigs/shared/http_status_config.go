@@ -1,6 +1,6 @@
 package shared
 
-// HTTPStatusConfig 状态码
+// 状态吗
 type HTTPStatusConfig struct {
 	Always bool  `yaml:"always" json:"always"`
 	Codes  []int `yaml:"codes" json:"codes"`

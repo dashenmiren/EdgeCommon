@@ -31,6 +31,9 @@ var HTTPAccessLogFieldsCodes = []HTTPAccessLogField{
 var HTTPAccessLogDefaultFieldsCodes = []HTTPAccessLogField{
 	HTTPAccessLogFieldHeader,
 	HTTPAccessLogFieldSentHeader,
+	HTTPAccessLogFieldArg,
+	HTTPAccessLogFieldCookie,
+	HTTPAccessLogFieldExtend,
 	HTTPAccessLogFieldReferer,
 	HTTPAccessLogFieldUserAgent,
 }
@@ -68,13 +71,13 @@ var HTTPAccessLogFields = []maps.Map{
 		"code": HTTPAccessLogFieldRequestBody,
 		"name": "请求Body",
 	},
-	/**{
+	{
 		"code": HTTPAccessLogFieldResponseBody,
 		"name": "响应Body",
-	},**/
+	},
 }
 
-// HTTPAccessLogShortFields 精简版的日志字段，用来用
+// 精简版的日志字段，用来用
 var HTTPAccessLogShortFields = []maps.Map{
 	{
 		"code": HTTPAccessLogFieldHeader,

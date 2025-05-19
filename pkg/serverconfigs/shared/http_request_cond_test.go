@@ -3,11 +3,11 @@ package shared
 import (
 	"bytes"
 	"fmt"
+	"github.com/iwind/TeaGo/Tea"
+	"github.com/iwind/TeaGo/assert"
 	"net"
 	"regexp"
 	"testing"
-
-	"github.com/iwind/TeaGo/assert"
 )
 
 func TestRequestCond_Compare1(t *testing.T) {
@@ -81,78 +81,6 @@ func TestRequestCond_Compare1(t *testing.T) {
 		}
 		a.IsNil(cond.Init())
 		a.IsFalse(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello",
-			Operator: RequestCondOperatorWildcardMatch,
-			Value:    "/*",
-		}
-		a.IsNil(cond.Init())
-		a.IsTrue(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello/world",
-			Operator: RequestCondOperatorWildcardMatch,
-			Value:    "/*/world",
-		}
-		a.IsNil(cond.Init())
-		a.IsTrue(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello/world",
-			Operator: RequestCondOperatorWildcardMatch,
-			Value:    "/H*/world",
-		}
-		a.IsNil(cond.Init())
-		a.IsTrue(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello",
-			Operator: RequestCondOperatorWildcardMatch,
-			Value:    "/hello/*",
-		}
-		a.IsNil(cond.Init())
-		a.IsFalse(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello/world",
-			Operator: RequestCondOperatorWildcardNotMatch,
-			Value:    "/hello/*",
-		}
-		a.IsNil(cond.Init())
-		a.IsFalse(cond.Match(func(format string) string {
-			return format
-		}))
-	}
-
-	{
-		var cond = HTTPRequestCond{
-			Param:    "/hello",
-			Operator: RequestCondOperatorWildcardNotMatch,
-			Value:    "/hello/*",
-		}
-		a.IsNil(cond.Init())
-		a.IsTrue(cond.Match(func(format string) string {
 			return format
 		}))
 	}
@@ -759,7 +687,7 @@ func TestRequestCond_File(t *testing.T) {
 		}))
 	}
 
-	/**{
+	{
 		cond := HTTPRequestCond{
 			Param:    "a.png",
 			Operator: RequestCondOperatorFileExist,
@@ -834,7 +762,7 @@ func TestRequestCond_File(t *testing.T) {
 		a.IsFalse(cond.Match(func(source string) string {
 			return source
 		}))
-	}**/
+	}
 }
 
 func TestRequestCond_MimeType(t *testing.T) {

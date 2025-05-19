@@ -1,45 +1,36 @@
 package serverconfigs
 
 import (
-	"context"
 	"fmt"
+	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/sslconfigs"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/ossconfigs"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 )
 
-// OriginConfig 源站服务配置
+// 源站服务配置
 type OriginConfig struct {
-	Id           int64                 `yaml:"id" json:"id"`                     // ID
-	IsOn         bool                  `yaml:"isOn" json:"isOn"`                 // 是否启用
-	Version      int                   `yaml:"version" json:"version"`           // 版本
-	Name         string                `yaml:"name" json:"name"`                 // 名称
-	Addr         *NetworkAddressConfig `yaml:"addr" json:"addr"`                 // 地址
-	HTTP2Enabled bool                  `yaml:"http2Enabled" json:"http2Enabled"` // 是否支持HTTP2
-	OSS          *ossconfigs.OSSConfig `yaml:"oss" json:"oss"`                   // 对象存储配置
-	Description  string                `yaml:"description" json:"description"`   // 描述
-	Code         string                `yaml:"code" json:"code"`                 // 代号
+	Id          int64                 `yaml:"id" json:"id"`                   // ID
+	IsOn        bool                  `yaml:"isOn" json:"isOn"`               // 是否启用
+	Version     int                   `yaml:"version" json:"version"`         // 版本
+	Name        string                `yaml:"name" json:"name"`               // 名称
+	Addr        *NetworkAddressConfig `yaml:"addr" json:"addr"`               // 地址
+	Description string                `yaml:"description" json:"description"` // 描述 TODO
+	Code        string                `yaml:"code" json:"code"`               // 代号 TODO
 
 	Weight       uint                 `yaml:"weight" json:"weight"`           // 权重
 	ConnTimeout  *shared.TimeDuration `yaml:"connTimeout" json:"connTimeout"` // 连接失败超时
 	ReadTimeout  *shared.TimeDuration `yaml:"readTimeout" json:"readTimeout"` // 读取超时时间
 	IdleTimeout  *shared.TimeDuration `yaml:"idleTimeout" json:"idleTimeout"` // 空闲连接超时时间
-	MaxFails     int                  `yaml:"maxFails" json:"maxFails"`       // 最多失败次数
+	MaxFails     int                  `yaml:"maxFails" json:"maxFails"`       // 最多失败次数 TODO
 	MaxConns     int                  `yaml:"maxConns" json:"maxConns"`       // 最大并发连接数
 	MaxIdleConns int                  `yaml:"idleConns" json:"idleConns"`     // 最大空闲连接数
 
-	Domains []string `yaml:"domains" json:"domains"` // 所属域名
-
-	StripPrefix    string                `yaml:"stripPrefix" json:"stripPrefix"`       // 去除URL前缀
-	RequestURI     string                `yaml:"requestURI" json:"requestURI"`         // 转发后的请求URI
-	RequestHost    string                `yaml:"requestHost" json:"requestHost"`       // 自定义主机名
-	FollowPort     bool                  `yaml:"followPort" json:"followPort"`         // 端口跟随
-	FollowProtocol *FollowProtocolConfig `yaml:"followProtocol" json:"followProtocol"` // 协议跟随
+	StripPrefix string `yaml:"stripPrefix" json:"stripPrefix"` // 去除URL前缀
+	RequestURI  string `yaml:"requestURI" json:"requestURI"`   // 转发后的请求URI TODO
+	RequestHost string `yaml:"requestHost" json:"requestHost"` // 自定义主机名 TODO
 
 	RequestHeaderPolicyRef  *shared.HTTPHeaderPolicyRef `yaml:"requestHeaderPolicyRef" json:"requestHeaderPolicyRef"`   // 请求Header
 	RequestHeaderPolicy     *shared.HTTPHeaderPolicy    `yaml:"requestHeaderPolicy" json:"requestHeaderPolicy"`         // 请求Header策略
@@ -50,14 +41,12 @@ type OriginConfig struct {
 	// - http|https 返回2xx-3xx认为成功
 	HealthCheck *HealthCheckConfig `yaml:"healthCheck" json:"healthCheck"` // TODO
 
-	CertRef *sslconfigs.SSLCertRef    `yaml:"certRef" json:"certRef"` // 证书的引用
-	Cert    *sslconfigs.SSLCertConfig `yaml:"cert" json:"cert"`       // 请求源服务器用的证书
+	CertRef *sslconfigs.SSLCertRef    `yaml:"certRef" json:"certRef"` // 证书的引用 TODO
+	Cert    *sslconfigs.SSLCertConfig `yaml:"cert" json:"cert"`       // 请求源服务器用的证书 TODO
 
 	// ftp
 	FTPServerRef *FTPServerRef    `yaml:"ftpServerRef" json:"ftpServerRef"` // TODO
 	FTPServer    *FTPServerConfig `yaml:"ftpServer" json:"ftpServer"`       // TODO
-
-	IsOk bool `yaml:"isOk" json:"isOk"` // 是否可以正常访问，仅仅用于运行时检查
 
 	connTimeoutDuration time.Duration
 	readTimeoutDuration time.Duration
@@ -67,8 +56,8 @@ type OriginConfig struct {
 	requestPath   string
 	requestArgs   string
 
-	//hasRequestHeaders  bool
-	//hasResponseHeaders bool
+	hasRequestHeaders  bool
+	hasResponseHeaders bool
 
 	uniqueKey string
 
@@ -76,10 +65,8 @@ type OriginConfig struct {
 	requestURIHasVariables  bool
 }
 
-// Init 校验
-func (this *OriginConfig) Init(ctx context.Context) error {
-	this.IsOk = true
-
+// 校验
+func (this *OriginConfig) Init() error {
 	// URL
 	this.requestHostHasVariables = configutils.HasVariables(this.RequestHost)
 	this.requestURIHasVariables = configutils.HasVariables(this.RequestURI)
@@ -97,7 +84,7 @@ func (this *OriginConfig) Init(ctx context.Context) error {
 
 	// 证书
 	if this.Cert != nil {
-		err := this.Cert.Init(ctx)
+		err := this.Cert.Init()
 		if err != nil {
 			return err
 		}
@@ -167,26 +154,10 @@ func (this *OriginConfig) Init(ctx context.Context) error {
 		}
 	}
 
-	// follow protocol
-	if this.FollowProtocol != nil {
-		err := this.FollowProtocol.Init()
-		if err != nil {
-			return err
-		}
-	}
-
-	// oss
-	if this.OSS != nil {
-		err := this.OSS.Init()
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 
-// CandidateCodes 候选对象代号
+// 候选对象代号
 func (this *OriginConfig) CandidateCodes() []string {
 	codes := []string{strconv.FormatInt(this.Id, 10)}
 	if len(this.Code) > 0 {
@@ -195,56 +166,37 @@ func (this *OriginConfig) CandidateCodes() []string {
 	return codes
 }
 
-// CandidateWeight 候选对象权重
+// 候选对象权重
 func (this *OriginConfig) CandidateWeight() uint {
 	return this.Weight
 }
 
-// ConnTimeoutDuration 连接超时时间
+// 连接超时时间
 func (this *OriginConfig) ConnTimeoutDuration() time.Duration {
 	return this.connTimeoutDuration
 }
 
-// ReadTimeoutDuration 读取超时时间
+// 读取超时时间
 func (this *OriginConfig) ReadTimeoutDuration() time.Duration {
 	return this.readTimeoutDuration
 }
 
-// IdleTimeoutDuration 休眠超时时间
+// 休眠超时时间
 func (this *OriginConfig) IdleTimeoutDuration() time.Duration {
 	return this.idleTimeoutDuration
 }
 
-// RequestHostHasVariables 判断RequestHost是否有变量
+// 判断RequestHost是否有变量
 func (this *OriginConfig) RequestHostHasVariables() bool {
 	return this.requestHostHasVariables
 }
 
-// RequestURIHasVariables 判断RequestURI是否有变量
+// 判断RequestURI是否有变量
 func (this *OriginConfig) RequestURIHasVariables() bool {
 	return this.requestURIHasVariables
 }
 
-// UniqueKey 唯一Key
+// 唯一Key
 func (this *OriginConfig) UniqueKey() string {
 	return this.uniqueKey
-}
-
-// IsOSS 判断当前源站是否为OSS
-func (this *OriginConfig) IsOSS() bool {
-	return this.Addr != nil && ossconfigs.IsOSSProtocol(this.Addr.Protocol.String())
-}
-
-// AddrSummary 地址描述
-func (this *OriginConfig) AddrSummary() string {
-	if this.Addr == nil {
-		return ""
-	}
-
-	// OSS
-	if ossconfigs.IsOSSProtocol(this.Addr.Protocol.String()) && this.OSS != nil {
-		return this.OSS.Summary()
-	}
-
-	return this.Addr.Protocol.String() + "://" + this.Addr.Host + ":" + this.Addr.PortRange
 }

@@ -1,53 +1,26 @@
 package configutils
 
 import (
+	"encoding/binary"
+	"github.com/cespare/xxhash/v2"
+	"math"
 	"net"
 	"strings"
 )
 
-// IsIPv4 检查是否为IPv4
-func IsIPv4(netIP net.IP) bool {
-	if len(netIP) == 0 {
-		return false
+// IP2Long 将IP转换为整型
+// 注意IPv6没有顺序
+func IP2Long(ip string) uint64 {
+	if len(ip) == 0 {
+		return 0
 	}
-	return netIP.To4() != nil
-}
-
-// IsIPv6 检查是否为IPv6
-func IsIPv6(netIP net.IP) bool {
-	if len(netIP) == 0 {
-		return false
-	}
-	return netIP.To4() == nil && netIP.To16() != nil
-}
-
-// IPVersion 获取IP版本号
-func IPVersion(netIP net.IP) int {
-	if len(netIP) == 0 {
+	s := net.ParseIP(ip)
+	if len(s) == 0 {
 		return 0
 	}
 
-	if netIP.To4() != nil {
-		return 4
+	if strings.Contains(ip, ":") {
+		return math.MaxUint32 + xxhash.Sum64(s)
 	}
-
-	if netIP.To16() != nil {
-		return 6
-	}
-
-	return 0
-}
-
-// QuoteIP 为IPv6加上括号
-func QuoteIP(ip string) string {
-	if len(ip) == 0 {
-		return ip
-	}
-	if !strings.Contains(ip, ":") {
-		return ip
-	}
-	if ip[0] != '[' {
-		return "[" + ip + "]"
-	}
-	return ip
+	return uint64(binary.BigEndian.Uint32(s.To4()))
 }

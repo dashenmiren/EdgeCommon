@@ -5,7 +5,6 @@ package pb;
 
 import "models/model_ns_cluster.proto";
 import "models/model_node_install_status.proto";
-import "models/model_node_login.proto";
 
 // 域名服务节点
 message NSNode {
@@ -18,12 +17,9 @@ message NSNode {
 	bool isInstalled = 7;
 	string installDir = 9;
 	bool isUp = 8;
-	bool isActive = 10;
-	repeated int64 connectedAPINodeIds = 11;
-	bytes apiNodeAddrsJSON = 12;
 
 	NSCluster nsCluster = 32;
-	NodeLogin nodeLogin = 33;
+	//NodeLogin login = 33;
 	NodeInstallStatus installStatus = 34;
 	//repeated NodeIPAddress ipAddresses = 35;
 	//NodeGroup nodeGroup = 36;

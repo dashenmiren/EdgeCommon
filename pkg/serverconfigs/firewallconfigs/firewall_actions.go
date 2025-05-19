@@ -62,17 +62,12 @@ func FindFirewallActionTypeName(actionType FirewallActionType) string {
 }
 
 type FirewallActionIPSetConfig struct {
-	Path string `json:"path"` // 命令路径 TODO 暂时不实现
-
-	WhiteName string `json:"whiteName"` // IPSet白名单名称
-	BlackName string `json:"blackName"` // IPSet黑名单名称
-
-	WhiteNameIPv6 string `json:"whiteNameIPv6"` // IPv6白名单名称
-	BlackNameIPv6 string `json:"blackNameIPv6"` // IPv6黑名单名称
-
-	MaxElements        int  `json:"maxElements"`        // 最多IP数量 TODO 暂时不实现
-	AutoAddToIPTables  bool `json:"autoAddToIPTables"`  // 是否自动创建IPTables规则
-	AutoAddToFirewalld bool `json:"autoAddToFirewalld"` // 是否自动加入到Firewalld
+	Path               string `json:"path"`               // 命令路径 TODO 暂时不实现
+	WhiteName          string `json:"whiteName"`          // IPSet白名单名称
+	BlackName          string `json:"blackName"`          // IPSet黑名单名称
+	MaxElements        int    `json:"maxElements"`        // 最多IP数量 TODO 暂时不实现
+	AutoAddToIPTables  bool   `json:"autoAddToIPTables"`  // 是否自动创建IPTables规则
+	AutoAddToFirewalld bool   `json:"autoAddToFirewalld"` // 是否自动加入到Firewalld
 
 	// TODO 添加需要阻止的端口列表
 }
@@ -97,7 +92,7 @@ type FirewallActionScriptConfig struct {
 	// TODO 添加需要阻止的端口列表
 }
 
-// FirewallActionHTTPAPIConfig HTTP API配置
+// HTTP API配置
 type FirewallActionHTTPAPIConfig struct {
 	URL            string `json:"url"`            // URL路径
 	TimeoutSeconds int    `json:"timeoutSeconds"` // 超时时间 TODO 暂时不实现
@@ -106,7 +101,7 @@ type FirewallActionHTTPAPIConfig struct {
 	// TODO 添加需要阻止的端口列表
 }
 
-// FirewallActionHTMLConfig HTML配置
+// HTML配置
 type FirewallActionHTMLConfig struct {
 	Content string `json:"content"` // 完整的HTML内容
 }

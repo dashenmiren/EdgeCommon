@@ -12,8 +12,3 @@ message RPCSuccess {
 message RPCCountResponse {
 	int64 count = 1;
 }
-
-// 是否存在
-message RPCExists {
-	bool exists = 1;
-}

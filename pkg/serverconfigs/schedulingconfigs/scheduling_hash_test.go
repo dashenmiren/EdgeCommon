@@ -2,11 +2,10 @@ package schedulingconfigs
 
 import (
 	"fmt"
+	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
 	"math/rand"
 	"testing"
 	"time"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 func TestHashScheduling_Next(t *testing.T) {

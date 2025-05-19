@@ -5,7 +5,6 @@ package pb;
 
 import "models/rpc_messages.proto";
 
-// HTTP Websocket管理服务
 service HTTPWebsocketService {
 	// 创建Websocket配置
 	rpc createHTTPWebsocket (CreateHTTPWebsocketRequest) returns (CreateHTTPWebsocketResponse);

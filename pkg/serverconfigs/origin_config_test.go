@@ -1,16 +1,13 @@
 package serverconfigs
 
-import (
-	"context"
-	"testing"
-)
+import "testing"
 
 func TestOriginConfig_UniqueKey(t *testing.T) {
 	origin := &OriginConfig{
 		Id:      1,
 		Version: 101,
 	}
-	err := origin.Init(context.TODO())
+	err := origin.Init()
 	if err != nil {
 		t.Fatal(err)
 	}

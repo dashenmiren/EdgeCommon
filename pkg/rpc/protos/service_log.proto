@@ -6,7 +6,6 @@ package pb;
 import "models/rpc_messages.proto";
 import "models/model_log.proto";
 
-// 审计日志服务
 service LogService {
 	// 创建日志
 	rpc createLog (CreateLogRequest) returns (CreateLogResponse);
@@ -32,12 +31,10 @@ service LogService {
 
 // 创建日志
 message CreateLogRequest {
-	string level = 1; // 级别：info, warn, error
-	string description = 2; // 描述
-	string action = 3; // 可选项，发生操作所在的页面URL
-	string ip = 4; // 可选项，操作用户IP
-	string langMessageCode = 5; // 多语言消息
-	bytes langMessageArgsJSON = 6; // 多语言消息中的参数项，格式：[arg1, arg2, ...]
+	string level = 1;
+	string description = 2;
+	string action = 3;
+	string ip = 4;
 }
 
 message CreateLogResponse {
@@ -46,22 +43,20 @@ message CreateLogResponse {
 
 // 计算日志数量
 message CountLogRequest {
-	string dayFrom = 1; // 可选项，开始日期
-	string dayTo = 2; // 可选项，结束日期
-	string keyword = 3; // 可选项，关键词
-	string userType = 4; // 可选项，用户类型：admin|user；用户端固定为user
-	string level = 5; // 可选项，错误级别：info, warn, error
+	string dayFrom = 1;
+	string dayTo = 2;
+	string keyword = 3;
+	string userType = 4; // admin|user
 }
 
 // 列出单页日志
 message ListLogsRequest {
-	int64 offset = 1; // 读取位置，从0开始
-	int64 size = 2; // 读取数量
-	string dayFrom = 3; // 可选项，开始日期
-	string dayTo = 4; // 可选项，结束日期
-	string keyword = 5; // 可选项，关键词
-	string userType = 6; // 可选项，用户类型：admin|user；用户端固定为user
-	string level = 7; // 可选项，错误级别：info, warn, error
+	int64 offset = 1;
+	int64 size = 2;
+	string dayFrom = 3;
+	string dayTo = 4;
+	string keyword = 5;
+	string userType = 6;
 }
 
 message ListLogsResponse {

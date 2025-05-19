@@ -1,8 +1,8 @@
 package systemconfigs
 
-import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
+import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
 
-// DefaultLogConfig 默认日志配置
+// 默认日志配置
 func DefaultLogConfig() *LogConfig {
 	return &LogConfig{
 		CanDelete: false,
@@ -16,7 +16,7 @@ func DefaultLogConfig() *LogConfig {
 	}
 }
 
-// LogConfig 操作日志相关配置
+// 操作日志相关配置
 type LogConfig struct {
 	CanDelete bool                 `json:"canDelete"` // 是否可删除
 	CanClean  bool                 `json:"canClean"`  // 是否可清理

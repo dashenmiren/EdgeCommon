@@ -1,9 +1,8 @@
 package shared
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestHTTPRequestCondGroup_MatchRequest(t *testing.T) {

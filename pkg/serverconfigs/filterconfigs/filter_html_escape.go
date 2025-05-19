@@ -1,9 +1,8 @@
 package filterconfigs
 
 import (
-	"html"
-
 	"github.com/iwind/TeaGo/types"
+	"html"
 )
 
 type HTMLEscapeFilter struct {

@@ -2,10 +2,9 @@ package serverconfigs
 
 import (
 	"fmt"
+	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
 	"regexp"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 type HTTPRewriteMode = string
@@ -91,7 +90,7 @@ func (this *HTTPRewriteRule) MatchRequest(requestPath string, formatter func(sou
 	}
 
 	// 判断条件
-	if this.Conds != nil && this.Conds.HasRequestConds() && !this.Conds.MatchRequest(formatter) {
+	if this.Conds != nil && !this.Conds.MatchRequest(formatter) {
 		return "", nil, false
 	}
 

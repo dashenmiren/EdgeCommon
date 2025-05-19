@@ -1,9 +1,8 @@
 package filterconfigs
 
 import (
-	"math/big"
-
 	"github.com/iwind/TeaGo/types"
+	"math/big"
 )
 
 type Hex2DecFilter struct {

@@ -14,8 +14,4 @@ message NodeLog {
 	int32 count = 8;
 	int64 serverId = 9;
 	bool isFixed = 10;
-	int64 originId = 11;
-	bool isRead = 12;
-	bytes paramsJSON = 13;
-	string type = 14;
 }

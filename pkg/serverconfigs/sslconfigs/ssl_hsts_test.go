@@ -1,9 +1,8 @@
 package sslconfigs
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestHSTSConfig(t *testing.T) {

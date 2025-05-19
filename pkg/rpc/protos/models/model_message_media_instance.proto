@@ -12,6 +12,4 @@ message MessageMediaInstance {
 	MessageMedia messageMedia = 4;
 	bytes paramsJSON = 5;
 	string description = 6;
-	bytes rateJSON = 7;
-	int32 hashLife = 8;
 }

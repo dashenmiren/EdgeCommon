@@ -1,9 +1,8 @@
 package configutils
 
 import (
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestMatchKeyword(t *testing.T) {

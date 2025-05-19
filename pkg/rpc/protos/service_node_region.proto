@@ -21,7 +21,7 @@ service NodeRegionService {
 	rpc findAllEnabledNodeRegions (FindAllEnabledNodeRegionsRequest) returns (FindAllEnabledNodeRegionsResponse);
 
 	// 查找所有启用的区域
-	rpc findAllAvailableNodeRegions (FindAllAvailableNodeRegionsRequest) returns (FindAllAvailableNodeRegionsResponse);
+	rpc findAllEnabledAndOnNodeRegions (FindAllEnabledAndOnNodeRegionsRequest) returns (FindAllEnabledAndOnNodeRegionsResponse);
 
 	// 排序
 	rpc updateNodeRegionOrders (UpdateNodeRegionOrdersRequest) returns (RPCSuccess);
@@ -66,11 +66,11 @@ message FindAllEnabledNodeRegionsResponse {
 }
 
 // 查找所有启用的区域
-message FindAllAvailableNodeRegionsRequest {
+message FindAllEnabledAndOnNodeRegionsRequest {
 
 }
 
-message FindAllAvailableNodeRegionsResponse {
+message FindAllEnabledAndOnNodeRegionsResponse {
 	repeated NodeRegion nodeRegions = 1;
 }
 

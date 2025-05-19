@@ -1,7 +1,6 @@
 package firewallconfigs
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -16,27 +15,12 @@ type HTTPFirewallRule struct {
 	Operator          string                 `yaml:"operator" json:"operator"`
 	Value             string                 `yaml:"value" json:"value"`
 	IsCaseInsensitive bool                   `yaml:"isCaseInsensitive" json:"isCaseInsensitive"`
-	IsComposed        bool                   `yaml:"isComposed" json:"isComposed"`
 	CheckpointOptions map[string]interface{} `yaml:"checkpointOptions" json:"checkpointOptions"`
 	Description       string                 `yaml:"description" json:"description"`
 }
 
 func (this *HTTPFirewallRule) Init() error {
 	// TODO 执行更严谨的校验
-
-	switch this.Operator {
-	case HTTPFirewallRuleOperatorMatch:
-		_, err := regexp.Compile(this.Value)
-		if err != nil {
-			return fmt.Errorf("regexp validate failed: %w, expression: %s", err, this.Value)
-		}
-	case HTTPFirewallRuleOperatorNotMatch:
-		_, err := regexp.Compile(this.Value)
-		if err != nil {
-			return fmt.Errorf("regexp validate failed: %w, expression: %s", err, this.Value)
-		}
-	}
-
 	return nil
 }
 
@@ -48,8 +32,4 @@ func (this *HTTPFirewallRule) Prefix() string {
 		return pieces[0]
 	}
 	return this.Param
-}
-
-func (this *HTTPFirewallRule) Summary() string {
-	return this.Param + " " + FindRuleOperatorName(this.Operator) + " " + this.Value
 }

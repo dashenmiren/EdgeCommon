@@ -1,7 +1,5 @@
 package serverconfigs
 
-import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/ossconfigs"
-
 type Protocol string
 
 const (
@@ -9,10 +7,10 @@ const (
 	ProtocolHTTPS Protocol = "https"
 	ProtocolTCP   Protocol = "tcp"
 	ProtocolTLS   Protocol = "tls"
+	ProtocolUnix  Protocol = "unix"
 	ProtocolUDP   Protocol = "udp"
 
 	// 子协议
-
 	ProtocolHTTP4 Protocol = "http4"
 	ProtocolHTTP6 Protocol = "http6"
 
@@ -27,7 +25,7 @@ const (
 )
 
 func AllProtocols() []Protocol {
-	return []Protocol{ProtocolHTTP, ProtocolHTTPS, ProtocolTCP, ProtocolTLS, ProtocolUDP, ProtocolHTTP4, ProtocolHTTP6, ProtocolHTTPS4, ProtocolHTTPS6, ProtocolTCP4, ProtocolTCP6, ProtocolTLS4, ProtocolTLS6}
+	return []Protocol{ProtocolHTTP, ProtocolHTTPS, ProtocolTCP, ProtocolTLS, ProtocolUnix, ProtocolUDP, ProtocolHTTP4, ProtocolHTTP6, ProtocolHTTPS4, ProtocolHTTPS6, ProtocolTCP4, ProtocolTCP6, ProtocolTLS4, ProtocolTLS6}
 }
 
 func (this Protocol) IsHTTPFamily() bool {
@@ -46,15 +44,15 @@ func (this Protocol) IsTLSFamily() bool {
 	return this == ProtocolTLS || this == ProtocolTLS4 || this == ProtocolTLS6
 }
 
+func (this Protocol) IsUnixFamily() bool {
+	return this == ProtocolUnix
+}
+
 func (this Protocol) IsUDPFamily() bool {
 	return this == ProtocolUDP
 }
 
-func (this Protocol) IsOSS() bool {
-	return ossconfigs.IsOSSProtocol(this.String())
-}
-
-// Primary 主协议
+// 主协议
 func (this Protocol) Primary() Protocol {
 	switch this {
 	case ProtocolHTTP, ProtocolHTTP4, ProtocolHTTP6:
@@ -65,6 +63,8 @@ func (this Protocol) Primary() Protocol {
 		return ProtocolTCP
 	case ProtocolTLS, ProtocolTLS4, ProtocolTLS6:
 		return ProtocolTLS
+	case ProtocolUnix:
+		return ProtocolUnix
 	case ProtocolUDP:
 		return ProtocolUDP
 	default:
@@ -72,7 +72,7 @@ func (this Protocol) Primary() Protocol {
 	}
 }
 
-// Scheme schema
+// Scheme
 func (this Protocol) Scheme() string {
 	return string(this)
 }

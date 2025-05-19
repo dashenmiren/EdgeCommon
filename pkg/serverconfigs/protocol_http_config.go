@@ -26,7 +26,7 @@ func (this *HTTPProtocolConfig) Init() error {
 	return nil
 }
 
-// AsJSON 转换为JSON
+// 转换为JSON
 func (this *HTTPProtocolConfig) AsJSON() ([]byte, error) {
 	return json.Marshal(this)
 }

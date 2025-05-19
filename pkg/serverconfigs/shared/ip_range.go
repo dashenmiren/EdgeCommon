@@ -3,14 +3,13 @@ package shared
 import (
 	"bytes"
 	"errors"
+	"github.com/iwind/TeaGo/utils/string"
 	"net"
 	"regexp"
 	"strings"
-
-	"github.com/iwind/TeaGo/utils/string"
 )
 
-// IPRangeType IP Range类型
+// IP Range类型
 type IPRangeType = int
 
 const (
@@ -20,7 +19,7 @@ const (
 	IPRangeTypeWildcard IPRangeType = 4 // 通配符，可以使用*
 )
 
-// IPRangeConfig IP Range
+// IP Range
 type IPRangeConfig struct {
 	Id string `yaml:"id" json:"id"`
 
@@ -37,14 +36,14 @@ type IPRangeConfig struct {
 	reg    *regexp.Regexp
 }
 
-// NewIPRangeConfig 获取新对象
+// 获取新对象
 func NewIPRangeConfig() *IPRangeConfig {
 	return &IPRangeConfig{
 		Id: stringutil.Rand(16),
 	}
 }
 
-// ParseIPRange 从字符串中分析
+// 从字符串中分析
 func ParseIPRange(s string) (*IPRangeConfig, error) {
 	if len(s) == 0 {
 		return nil, errors.New("invalid ip range")
@@ -80,15 +79,15 @@ func ParseIPRange(s string) (*IPRangeConfig, error) {
 		ipRange.IPTo = s
 	}
 
-	err := ipRange.Init()
+	err := ipRange.Validate()
 	if err != nil {
 		return nil, err
 	}
 	return ipRange, nil
 }
 
-// Init 初始化校验
-func (this *IPRangeConfig) Init() error {
+// 校验
+func (this *IPRangeConfig) Validate() error {
 	if this.Type == IPRangeTypeCIDR {
 		if len(this.CIDR) == 0 {
 			return errors.New("cidr should not be empty")
@@ -117,10 +116,10 @@ func (this *IPRangeConfig) Init() error {
 	return nil
 }
 
-// Contains 是否包含某个IP
+// 是否包含某个IP
 func (this *IPRangeConfig) Contains(ipString string) bool {
 	ip := net.ParseIP(ipString)
-	if ip == nil {
+	if ip.To4() == nil {
 		return false
 	}
 	if this.Type == IPRangeTypeCIDR {

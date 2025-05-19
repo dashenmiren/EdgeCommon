@@ -3,7 +3,6 @@ package filterconfigs
 import (
 	"crypto/sha256"
 	"fmt"
-
 	"github.com/iwind/TeaGo/types"
 )
 

@@ -2,9 +2,8 @@ package filterconfigs
 
 import (
 	"encoding/base64"
-	"testing"
-
 	"github.com/iwind/TeaGo/assert"
+	"testing"
 )
 
 func TestBase64EncodeFilter_Do(t *testing.T) {

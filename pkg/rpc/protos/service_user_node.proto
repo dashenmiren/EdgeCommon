@@ -2,11 +2,9 @@ syntax = "proto3";
 option go_package = "./pb";
 
 package pb;
-
 import "models/model_user_node.proto";
 import "models/rpc_messages.proto";
 
-// 用户节点管理服务
 service UserNodeService {
 	// 创建用户节点
 	rpc createUserNode (CreateUserNodeRequest) returns (CreateUserNodeResponse);
@@ -34,12 +32,6 @@ service UserNodeService {
 
 	// 更新节点状态
 	rpc updateUserNodeStatus (UpdateUserNodeStatusRequest) returns (RPCSuccess);
-
-	// 计算使用某个SSL证书的用户节点数量
-	rpc countAllEnabledUserNodesWithSSLCertId (CountAllEnabledUserNodesWithSSLCertIdRequest) returns (RPCCountResponse);
-
-	// 获取用户节点访问地址
-	rpc findUserNodeAccessAddr(FindUserNodeAccessAddrRequest) returns (FindUserNodeAccessAddrResponse);
 }
 
 // 创建用户节点
@@ -53,12 +45,12 @@ message CreateUserNodeRequest {
 }
 
 message CreateUserNodeResponse {
-	int64 userNodeId = 1;
+	int64 nodeId = 1;
 }
 
 // 修改用户节点
 message UpdateUserNodeRequest {
-	int64 userNodeId = 1;
+	int64 nodeId = 1;
 	string name = 2;
 	string description = 3;
 	bytes httpJSON = 4;
@@ -69,7 +61,7 @@ message UpdateUserNodeRequest {
 
 // 删除用户节点
 message DeleteUserNodeRequest {
-	int64 userNodeId = 1;
+	int64 nodeId = 1;
 }
 
 // 列出所有可用用户节点
@@ -78,7 +70,7 @@ message FindAllEnabledUserNodesRequest {
 }
 
 message FindAllEnabledUserNodesResponse {
-	repeated UserNode userNodes = 1;
+	repeated UserNode nodes = 1;
 }
 
 // 计算用户节点数量
@@ -93,16 +85,16 @@ message ListEnabledUserNodesRequest {
 }
 
 message ListEnabledUserNodesResponse {
-	repeated UserNode userNodes = 1;
+	repeated UserNode nodes = 1;
 }
 
 // 根据ID查找节点
 message FindEnabledUserNodeRequest {
-	int64 userNodeId = 1;
+	int64 nodeId = 1;
 }
 
 message FindEnabledUserNodeResponse {
-	UserNode userNode = 1;
+	UserNode node = 1;
 }
 
 // 获取当前用户节点
@@ -111,25 +103,11 @@ message FindCurrentUserNodeRequest {
 }
 
 message FindCurrentUserNodeResponse {
-	UserNode userNode = 1;
+	UserNode node = 1;
 }
 
 // 更新节点状态
 message UpdateUserNodeStatusRequest {
-	int64 userNodeId = 1;
+	int64 nodeId = 1;
 	bytes statusJSON = 2;
-}
-
-// 计算使用某个SSL证书的用户节点数量
-message CountAllEnabledUserNodesWithSSLCertIdRequest {
-	int64 sslCertId = 1;
-}
-
-// 获取用户节点访问地址
-message FindUserNodeAccessAddrRequest {
-
-}
-
-message FindUserNodeAccessAddrResponse {
-	string accessAddr = 1;
 }

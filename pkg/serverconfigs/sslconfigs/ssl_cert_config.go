@@ -1,22 +1,17 @@
 package sslconfigs
 
 import (
-	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"fmt"
-	"reflect"
+	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/iwind/TeaGo/lists"
 	"strconv"
 	"time"
-
-	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
-	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
-	"github.com/iwind/TeaGo/lists"
 )
 
-// SSLCertConfig SSL证书
+// SSL证书
 type SSLCertConfig struct {
 	Id          int64  `yaml:"id" json:"id"`
 	IsOn        bool   `yaml:"isOn" json:"isOn"`
@@ -34,45 +29,21 @@ type SSLCertConfig struct {
 	DNSNames    []string `yaml:"dnsNames" json:"dnsNames"`
 	CommonNames []string `yaml:"commonNames" json:"commonNames"`
 
-	// OCSP
-	OCSP          []byte `yaml:"ocsp" json:"ocsp"`
-	OCSPExpiresAt int64  `yaml:"ocspExpiresAt" json:"ocspExpiresAt"`
-	OCSPError     string `yaml:"ocspError" json:"ocspError"`
-
 	cert      *tls.Certificate
-	caCerts   []*x509.Certificate
 	timeBegin time.Time
 	timeEnd   time.Time
 }
 
-// Init 校验
-func (this *SSLCertConfig) Init(ctx context.Context) error {
-	// 如果没有指定数据， 则从ctx中读取数据
-	if ctx != nil && len(this.CertData) < 128 {
-		var dataMapOne = ctx.Value("DataMap")
-		if dataMapOne != nil && !reflect.ValueOf(dataMapOne).IsNil() {
-			dataMap, ok := dataMapOne.(*shared.DataMap)
-			if !ok {
-				return errors.New("SSLCertConfig.init(): invalid 'DataMap' in context")
-			}
-			if dataMap != nil { // 再次检查是否为nil
-				this.KeyData = dataMap.Read(this.KeyData)
-				this.CertData = dataMap.Read(this.CertData)
-				this.OCSP = dataMap.Read(this.OCSP)
-			}
-		}
-	}
-
+// 校验
+func (this *SSLCertConfig) Init() error {
 	var commonNames []string // 发行组织
 	var dnsNames []string    // 域名
 
-	this.caCerts = []*x509.Certificate{}
-
 	// 分析证书
 	if this.IsCA { // CA证书
-		var data = this.CertData
+		data := this.CertData
 
-		var index = -1
+		index := -1
 		this.cert = &tls.Certificate{
 			Certificate: [][]byte{},
 		}
@@ -81,6 +52,9 @@ func (this *SSLCertConfig) Init(ctx context.Context) error {
 
 			block, rest := pem.Decode(data)
 			if block == nil {
+				break
+			}
+			if len(rest) == 0 {
 				break
 			}
 			this.cert.Certificate = append(this.cert.Certificate, block.Bytes)
@@ -92,21 +66,10 @@ func (this *SSLCertConfig) Init(ctx context.Context) error {
 			if c == nil {
 				return errors.New("no available certificates in file")
 			}
-			this.caCerts = append(this.caCerts, c)
 
 			for _, dnsName := range c.DNSNames {
 				if !lists.ContainsString(dnsNames, dnsName) {
 					dnsNames = append(dnsNames, dnsName)
-				}
-			}
-
-			for _, ipAddress := range c.IPAddresses {
-				if ipAddress == nil {
-					continue
-				}
-				var ipAddressString = ipAddress.String()
-				if !lists.ContainsString(dnsNames, ipAddressString) {
-					dnsNames = append(dnsNames, ipAddressString)
 				}
 			}
 
@@ -116,15 +79,11 @@ func (this *SSLCertConfig) Init(ctx context.Context) error {
 				this.timeBegin = c.NotBefore
 				this.timeEnd = c.NotAfter
 			}
-
-			if len(rest) == 0 {
-				break
-			}
 		}
 	} else { // 证书+私钥
 		cert, err := tls.X509KeyPair(this.CertData, this.KeyData)
 		if err != nil {
-			return fmt.Errorf("load certificate '%s' failed: %w", strconv.FormatInt(this.Id, 10), err)
+			return errors.New("load certificate '" + strconv.FormatInt(this.Id, 10) + "' failed:" + err.Error())
 		}
 
 		for index, data := range cert.Certificate {
@@ -132,24 +91,9 @@ func (this *SSLCertConfig) Init(ctx context.Context) error {
 			if err != nil {
 				continue
 			}
-
-			if cert.Leaf == nil {
-				cert.Leaf = c
-			}
-
 			for _, dnsName := range c.DNSNames {
 				if !lists.ContainsString(dnsNames, dnsName) {
 					dnsNames = append(dnsNames, dnsName)
-				}
-			}
-
-			for _, ipAddress := range c.IPAddresses {
-				if ipAddress == nil {
-					continue
-				}
-				var ipAddressString = ipAddress.String()
-				if !lists.ContainsString(dnsNames, ipAddressString) {
-					dnsNames = append(dnsNames, ipAddressString)
 				}
 			}
 
@@ -173,7 +117,7 @@ func (this *SSLCertConfig) Init(ctx context.Context) error {
 	return nil
 }
 
-// MatchDomain 校验是否匹配某个域名
+// 校验是否匹配某个域名
 func (this *SSLCertConfig) MatchDomain(domain string) bool {
 	if len(this.DNSNames) == 0 {
 		return false
@@ -181,21 +125,17 @@ func (this *SSLCertConfig) MatchDomain(domain string) bool {
 	return configutils.MatchDomains(this.DNSNames, domain)
 }
 
-// CertObject 获取证书对象
+// 获取证书对象
 func (this *SSLCertConfig) CertObject() *tls.Certificate {
 	return this.cert
 }
 
-func (this *SSLCertConfig) CACerts() []*x509.Certificate {
-	return this.caCerts
-}
-
-// TimeBegin 开始时间
+// 开始时间
 func (this *SSLCertConfig) TimeBegin() time.Time {
 	return this.timeBegin
 }
 
-// TimeEnd 结束时间
+// 结束时间
 func (this *SSLCertConfig) TimeEnd() time.Time {
 	return this.timeEnd
 }
