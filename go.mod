@@ -1,4 +1,4 @@
-module github.com/TeaOSLab/EdgeCommon
+module github.com/dashenmiren/EdgeCommon
 
 go 1.15
 

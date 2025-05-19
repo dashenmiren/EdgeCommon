@@ -2,7 +2,7 @@ package serverconfigs
 
 import (
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/sslconfigs"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/sslconfigs"
 )
 
 func NewHTTPSProtocolConfigFromJSON(configJSON []byte) (*HTTPSProtocolConfig, error) {

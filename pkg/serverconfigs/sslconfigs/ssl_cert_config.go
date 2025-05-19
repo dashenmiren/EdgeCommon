@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+	"github.com/dashenmiren/EdgeCommon/pkg/configutils"
 	"github.com/iwind/TeaGo/lists"
 	"strconv"
 	"time"

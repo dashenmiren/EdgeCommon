@@ -3,7 +3,7 @@ package serverconfigs
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 )
 
 // HTTPCachePolicy 缓存策略配置

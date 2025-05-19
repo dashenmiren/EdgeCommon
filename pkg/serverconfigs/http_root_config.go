@@ -1,6 +1,6 @@
 package serverconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/configutils"
+import "github.com/dashenmiren/EdgeCommon/pkg/configutils"
 
 // Web文档目录配置
 type HTTPRootConfig struct {

@@ -1,6 +1,6 @@
 package firewallconfigs
 
-import "github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/ipconfigs"
+import "github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/ipconfigs"
 
 type HTTPFirewallInboundConfig struct {
 	IsOn      bool                        `yaml:"isOn" json:"isOn"`

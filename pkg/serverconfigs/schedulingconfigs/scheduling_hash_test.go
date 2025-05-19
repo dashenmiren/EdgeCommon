@@ -2,7 +2,7 @@ package schedulingconfigs
 
 import (
 	"fmt"
-	"github.com/TeaOSLab/EdgeCommon/pkg/serverconfigs/shared"
+	"github.com/dashenmiren/EdgeCommon/pkg/serverconfigs/shared"
 	"math/rand"
 	"testing"
 	"time"
